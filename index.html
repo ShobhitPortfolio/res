@@ -26,41 +26,30 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 18px;
-  z-index: 9999;
+  gap: 15px;
   background: rgba(0,0,0,0.6);
+  z-index: 9999;
 }
 
 .logo {
+  font-family: monospace;
   font-size: 20px;
   letter-spacing: 3px;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-family: monospace;
-  text-align: center;
-}
-
-.small-spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-top: 2px solid white;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  100% { transform: rotate(360deg); }
 }
 
 /* WRAPPER */
 .wrapper {
   display: flex;
-  align-items: center;
   gap: 20px;
+  align-items: center;
 }
 
-/* CARD */
+/* OUTER CARD (NO TRANSFORM HERE) */
+.card-shell {
+  position: relative;
+}
+
+/* INNER CARD (ONLY THIS IS TILTED) */
 .card {
   width: 620px;
   max-width: 92vw;
@@ -70,17 +59,71 @@ body {
   backdrop-filter: blur(30px);
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 25px 60px rgba(0,0,0,0.7);
-  position: relative;
 
-  transform: scale(0.8);
-  opacity: 0;
-  transition: 0.6s ease;
-  overflow: visible;
+  position: relative;
+  will-change: transform;
+  transition: transform 0.15s ease;
 }
 
-.show {
-  transform: scale(1);
-  opacity: 1;
+/* TITLE */
+#logoMain {
+  font-family: monospace;
+  font-size: 30px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: 4px;
+}
+
+/* DROPDOWN (NOW OUTSIDE TILTED ELEMENT SAFELY) */
+.dropdown {
+  position: relative;
+  z-index: 1000;
+}
+
+.dropdown-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 18px;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 110%;
+  width: 100%;
+  background: rgba(0,0,0,0.92);
+  border-radius: 16px;
+  display: none;
+  z-index: 99999;
+}
+
+.dropdown.active .dropdown-content {
+  display: block;
+}
+
+.dropdown-content div {
+  padding: 14px;
+  cursor: pointer;
+}
+
+.dropdown-content div:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* BUTTON */
+.action-btn {
+  width: 160px;
+  padding: 14px;
+  border-radius: 14px;
+  background: black;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  display: none;
 }
 
 /* EDGE GLOW */
@@ -112,99 +155,27 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* CURSOR GLOW */
-.cursor-glow {
+/* GLOW FOLLOW */
+.glow {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
   pointer-events: none;
-}
-
-/* TITLE */
-#logoMain {
-  font-family: monospace;
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 30px;
-  font-weight: 700;
-  letter-spacing: 4px;
-}
-
-/* DROPDOWN */
-.dropdown {
-  position: relative;
-  width: 100%;
-}
-
-.dropdown-btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.05);
-  border: 2px solid rgba(255,255,255,0.5);
-  cursor: pointer;
-  font-family: monospace;
-  font-size: 18px;
-}
-
-.dropdown-content {
-  position: absolute;
-  top: 110%;
-  width: 100%;
-  background: rgba(0,0,0,0.85);
   border-radius: 16px;
-  overflow: hidden;
-  transform: translateY(-10px);
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%),
+    rgba(255,255,255,0.25),
+    transparent 60%);
   opacity: 0;
-  pointer-events: none;
-  transition: 0.3s ease;
-  z-index: 50;
+  transition: opacity 0.15s ease;
 }
 
-.dropdown.active .dropdown-content {
-  transform: translateY(0);
+.card:hover .glow {
   opacity: 1;
-  pointer-events: auto;
 }
 
-.dropdown-content div {
-  padding: 14px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.dropdown-content div:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-/* RIGHT BUTTON */
-.action-btn {
-  width: 160px;
-  padding: 14px;
-  border-radius: 16px;
-  background: #000;
-  color: white;
-  border: 1px solid rgba(255,255,255,0.2);
-  font-weight: 500;
-  cursor: pointer;
-  display: none;
-  transition: 0.3s ease;
-}
-
-.action-btn.show {
-  display: block;
-}
-
-.action-btn:hover {
-  background: #111;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-}
-
-/* 📱 MOBILE FIX */
+/* MOBILE */
 @media (max-width: 768px) {
   .wrapper {
     flex-direction: column;
-    align-items: stretch;
   }
 
   .action-btn {
@@ -216,13 +187,10 @@ body {
 
 <body>
 
-<audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
-
 <!-- LOADER -->
 <div id="loader">
-  <div class="logo">RAWAL EDUCATIONAL SOCIETY</div>
-  <div class="logo">Initializing...</div>
-  <div class="small-spinner"></div>
+  <div id="logoLoad" class="logo">RAWAL EDUCATIONAL SOCIETY</div>
+  <div id="loadingText" class="logo">Initializing...</div>
 </div>
 
 <!-- MAIN -->
@@ -230,22 +198,26 @@ body {
 
   <div class="wrapper">
 
-    <div id="card" class="card">
-      <div class="cursor-glow"></div>
+    <div class="card-shell">
 
-      <div id="logoMain">RAWAL EDUCATIONAL SOCIETY</div>
+      <div id="card" class="card">
+        <div class="glow"></div>
 
-      <div class="dropdown" id="dropdown">
-        <div class="dropdown-btn" onclick="toggleDropdown()" id="selected">
-          Choose School
+        <div id="logoMain">RAWAL EDUCATIONAL SOCIETY</div>
+
+        <div class="dropdown" id="dropdown">
+          <div class="dropdown-btn" onclick="toggleDropdown()" id="selected">
+            Choose School
+          </div>
+
+          <div class="dropdown-content">
+            <div onclick="selectSchool('https://rawalpublicschool.com','Rawal Public School')">Rawal Public School</div>
+            <div onclick="selectSchool('https://rawalinternationalschool.com','Rawal International School')">Rawal International School</div>
+            <div onclick="selectSchool('https://rawalbsk.com','Rawal BSK School')">Rawal BSK School</div>
+            <div onclick="selectSchool('https://rawalconventschool.com','Rawal Convent School')">Rawal Convent School</div>
+          </div>
         </div>
 
-        <div class="dropdown-content">
-          <div onclick="selectSchool('https://rawalpublicschool.com','Rawal Public School')">Rawal Public School</div>
-          <div onclick="selectSchool('https://rawalinternationalschool.com','Rawal International School')">Rawal International School</div>
-          <div onclick="selectSchool('https://rawalbsk.com','Rawal BSK School')">Rawal BSK School</div>
-          <div onclick="selectSchool('https://rawalconventschool.com','Rawal Convent School')">Rawal Convent School</div>
-        </div>
       </div>
 
     </div>
@@ -260,88 +232,93 @@ body {
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
 let selectedUrl = "";
 
-function playClick() {
-  document.getElementById("clickSound").play();
-}
-
-/* HACKER TEXT */
-function hackerText(el, finalText, duration = 3000) {
+/* FAST HACKER TEXT */
+function hackerText(el, text, duration = 1200) {
   let start = Date.now();
 
   function run() {
-    let progress = (Date.now() - start) / duration;
-    let i = progress * finalText.length;
+    let p = (Date.now() - start) / duration;
+    let i = p * text.length;
 
-    el.innerText = finalText
-      .split("")
-      .map((c, index) =>
-        index < i ? finalText[index] : chars[Math.floor(Math.random()*chars.length)]
-      )
-      .join("");
+    el.innerText = text.split("").map((c, idx) =>
+      idx < i ? text[idx] : chars[Math.floor(Math.random()*chars.length)]
+    ).join("");
 
-    if (progress < 1) requestAnimationFrame(run);
-    else el.innerText = finalText;
+    if (p < 1) requestAnimationFrame(run);
+    else el.innerText = text;
   }
   run();
 }
 
 /* LOADER */
 setTimeout(() => {
-  hackerText(document.getElementById("logoMain"), "RAWAL EDUCATIONAL SOCIETY", 3000);
-}, 1000);
+  hackerText(document.getElementById("logoLoad"), "RAWAL EDUCATIONAL SOCIETY", 1300);
+  hackerText(document.getElementById("loadingText"), "LOADING COMPLETE", 1300);
+}, 500);
 
 setTimeout(() => {
   document.getElementById('loader').style.display = 'none';
   document.getElementById('mainContent').classList.remove('hidden');
-
-  setTimeout(() => {
-    document.getElementById('card').classList.add('show');
-  }, 200);
-
-}, 4000);
+}, 2200);
 
 /* DROPDOWN */
 function toggleDropdown() {
-  playClick();
   document.getElementById('dropdown').classList.toggle('active');
 }
 
 /* SELECT */
 function selectSchool(url, name) {
-  playClick();
   selectedUrl = url;
   document.getElementById('selected').innerText = name;
   document.getElementById('dropdown').classList.remove('active');
-  document.querySelector('.action-btn').classList.add('show');
+  document.querySelector('.action-btn').style.display = 'block';
 }
 
 /* VISIT */
 function visitSchool() {
-  playClick();
-  if (!selectedUrl) return alert("Please select a school first");
+  if (!selectedUrl) return alert("Select school first");
   window.location.href = selectedUrl;
 }
 
-/* TILT + GLOW */
+/* TILT */
 const card = document.getElementById('card');
-const glow = document.querySelector('.cursor-glow');
+const glow = document.querySelector('.glow');
+
+let mx = 0, my = 0, cx = 0, cy = 0, raf;
 
 card.addEventListener('mousemove', (e) => {
   const r = card.getBoundingClientRect();
-  const x = e.clientX - r.left;
-  const y = e.clientY - r.top;
 
-  const rx = (y / r.height - 0.5) * 10;
-  const ry = (x / r.width - 0.5) * 10;
+  mx = e.clientX - r.left;
+  my = e.clientY - r.top;
 
-  card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
+  card.style.setProperty('--x', `${(mx/r.width)*100}%`);
+  card.style.setProperty('--y', `${(my/r.height)*100}%`);
 
-  glow.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.25), transparent 60%)`;
+  if (!raf) animate();
 });
 
+function animate() {
+  raf = requestAnimationFrame(animate);
+
+  cx += (mx - cx) * 0.12;
+  cy += (my - cy) * 0.12;
+
+  const r = card.getBoundingClientRect();
+
+  const rx = (cy/r.height - 0.5) * 8;
+  const ry = (cx/r.width - 0.5) * 8;
+
+  card.style.transform =
+    `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.03)`;
+}
+
 card.addEventListener('mouseleave', () => {
-  card.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale(1)';
-  glow.style.background = 'none';
+  cancelAnimationFrame(raf);
+  raf = null;
+
+  card.style.transform =
+    `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
 });
 </script>
 
