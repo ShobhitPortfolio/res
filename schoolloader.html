@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Selector</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('download.jpg') center/cover;
+  overflow: hidden;
+  color: #e5e5e5;
+}
+
+/* LOADER */
+#loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  z-index: 9999;
+  background: rgba(0,0,0,0.6);
+}
+
+.logo {
+  font-size: 20px;
+  letter-spacing: 3px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-family: monospace;
+  text-align: center;
+}
+
+.small-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* LAYOUT WRAPPER */
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* CARD */
+.card {
+  width: 560px;
+  max-width: 92vw;
+  padding: 50px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+
+  position: relative;
+  transform: scale(0.8);
+  opacity: 0;
+  transition: 0.6s ease;
+  overflow: visible;
+}
+
+.show {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* EDGE GLOW (YOUR EFFECT ADDED) */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 0.6px;
+  background: linear-gradient(120deg, #a855f7, #ffffff, #a855f7);
+  background-size: 200% 200%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.card:hover::before {
+  opacity: 1;
+  animation: borderFlow 2.5s linear infinite;
+}
+
+@keyframes borderFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* CURSOR GLOW */
+.cursor-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* LOGO */
+.logo {
+  font-family: monospace;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* DROPDOWN FIXED */
+.dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+  font-family: monospace;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 110%;
+  width: 100%;
+  background: rgba(0,0,0,0.85);
+  border-radius: 16px;
+  overflow: hidden;
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s ease;
+  z-index: 50;
+}
+
+.dropdown.active .dropdown-content {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dropdown-content div {
+  padding: 14px;
+  cursor: pointer;
+}
+
+.dropdown-content div:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* BUTTON OUTSIDE CARD (RIGHT SIDE) */
+.action-btn {
+  width: 160px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #000;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  font-weight: 500;
+  cursor: pointer;
+
+  display: none;
+  transition: 0.3s ease;
+}
+
+.action-btn.show {
+  display: block;
+}
+
+.action-btn:hover {
+  background: #111;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+}
+</style>
+</head>
+
+<body>
+
+<audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="logo">RAWAL EDUCATIONAL SOCIETY</div>
+  <div class="logo">Initializing...</div>
+  <div class="small-spinner"></div>
+</div>
+
+<!-- MAIN -->
+<div id="mainContent" class="hidden">
+
+  <div class="wrapper">
+
+    <div id="card" class="card">
+
+      <div class="cursor-glow"></div>
+
+      <div class="logo" id="logoMain">RAWAL EDUCATIONAL SOCIETY</div>
+
+      <div class="dropdown" id="dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown()" id="selected">
+          Choose School
+        </div>
+
+        <div class="dropdown-content">
+          <div onclick="selectSchool('https://rawalpublicschool.com','Rawal Public School')">Rawal Public School</div>
+          <div onclick="selectSchool('https://rawalinternationalschool.com','Rawal International School')">Rawal International School</div>
+          <div onclick="selectSchool('https://rawalbsk.com','Rawal BSK School')">Rawal BSK School</div>
+          <div onclick="selectSchool('https://rawalconventschool.com','Rawal Convent School')">Rawal Convent School</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BUTTON RIGHT SIDE -->
+    <button class="action-btn" onclick="visitSchool()">VISIT</button>
+
+  </div>
+
+</div>
+
+<script>
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+let selectedUrl = "";
+
+function playClick() {
+  document.getElementById("clickSound").play();
+}
+
+/* HACKER TEXT */
+function hackerText(el, finalText, duration = 4000) {
+  let start = Date.now();
+
+  function run() {
+    let progress = (Date.now() - start) / duration;
+    let iterations = progress * finalText.length;
+
+    el.innerText = finalText
+      .split("")
+      .map((c, i) =>
+        i < iterations ? finalText[i] : chars[Math.floor(Math.random() * chars.length)]
+      )
+      .join("");
+
+    if (progress < 1) requestAnimationFrame(run);
+    else el.innerText = finalText;
+  }
+  run();
+}
+
+/* LOADER */
+setTimeout(() => {
+  hackerText(document.querySelector('.logo'), "RAWAL EDUCATIONAL SOCIETY", 3000);
+}, 1000);
+
+setTimeout(() => {
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('mainContent').classList.remove('hidden');
+
+  setTimeout(() => {
+    document.getElementById('card').classList.add('show');
+  }, 200);
+
+}, 4000);
+
+/* DROPDOWN */
+function toggleDropdown() {
+  playClick();
+  document.getElementById('dropdown').classList.toggle('active');
+}
+
+/* SELECT */
+function selectSchool(url, name) {
+  playClick();
+  selectedUrl = url;
+  document.getElementById('selected').innerText = name;
+
+  document.getElementById('dropdown').classList.remove('active');
+  document.querySelector('.action-btn').classList.add('show');
+}
+
+/* VISIT */
+function visitSchool() {
+  playClick();
+  if (!selectedUrl) return alert("Please select a school first");
+  window.location.href = selectedUrl;
+}
+
+/* TILT + GLOW */
+const card = document.getElementById('card');
+const glow = document.querySelector('.cursor-glow');
+
+card.addEventListener('mousemove', (e) => {
+  const rect = card.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  const rotateX = (y / rect.height - 0.5) * 10;
+  const rotateY = (x / rect.width - 0.5) * 10;
+
+  card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+
+  glow.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.25), transparent 60%)`;
+});
+
+card.addEventListener('mouseleave', () => {
+  card.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale(1)';
+  glow.style.background = 'none';
+});
+</script>
+
+</body>
+</html>
