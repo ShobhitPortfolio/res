@@ -60,7 +60,7 @@ body {
   gap: 20px;
 }
 
-/* BIG CARD */
+/* CARD */
 .card {
   width: 620px;
   max-width: 92vw;
@@ -83,7 +83,7 @@ body {
   opacity: 1;
 }
 
-/* EDGE GLOW (YOUR EFFECT) */
+/* EDGE GLOW */
 .card::before {
   content: "";
   position: absolute;
@@ -120,11 +120,14 @@ body {
   pointer-events: none;
 }
 
-/* LOGO (FIXED: no global glitch) */
+/* TITLE */
 #logoMain {
   font-family: monospace;
   text-align: center;
   margin-bottom: 30px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 4px;
 }
 
 /* DROPDOWN */
@@ -141,6 +144,7 @@ body {
   border: 2px solid rgba(255,255,255,0.5);
   cursor: pointer;
   font-family: monospace;
+  font-size: 18px;
 }
 
 .dropdown-content {
@@ -166,13 +170,14 @@ body {
 .dropdown-content div {
   padding: 14px;
   cursor: pointer;
+  font-size: 16px;
 }
 
 .dropdown-content div:hover {
   background: rgba(255,255,255,0.1);
 }
 
-/* RIGHT SIDE BUTTON */
+/* RIGHT BUTTON */
 .action-btn {
   width: 160px;
   padding: 14px;
@@ -194,6 +199,18 @@ body {
   background: #111;
   box-shadow: 0 10px 25px rgba(0,0,0,0.6);
 }
+
+/* 📱 MOBILE FIX */
+@media (max-width: 768px) {
+  .wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
 </style>
 </head>
 
@@ -203,8 +220,8 @@ body {
 
 <!-- LOADER -->
 <div id="loader">
-  <div id="logoLoad" class="logo">RAWAL EDUCATIONAL SOCIETY</div>
-  <div id="loadingText" class="logo">Initializing...</div>
+  <div class="logo">RAWAL EDUCATIONAL SOCIETY</div>
+  <div class="logo">Initializing...</div>
   <div class="small-spinner"></div>
 </div>
 
@@ -247,10 +264,8 @@ function playClick() {
   document.getElementById("clickSound").play();
 }
 
-/* FIXED HACKER TEXT (NO GLOBAL BUG) */
+/* HACKER TEXT */
 function hackerText(el, finalText, duration = 3000) {
-  if (!el) return;
-
   let start = Date.now();
 
   function run() {
@@ -272,8 +287,7 @@ function hackerText(el, finalText, duration = 3000) {
 
 /* LOADER */
 setTimeout(() => {
-  hackerText(document.getElementById("logoLoad"), "RAWAL EDUCATIONAL SOCIETY", 3000);
-  hackerText(document.getElementById("loadingText"), "LOADED", 3000);
+  hackerText(document.getElementById("logoMain"), "RAWAL EDUCATIONAL SOCIETY", 3000);
 }, 1000);
 
 setTimeout(() => {
@@ -282,7 +296,6 @@ setTimeout(() => {
 
   setTimeout(() => {
     document.getElementById('card').classList.add('show');
-    hackerText(document.getElementById("logoMain"), "RAWAL EDUCATIONAL SOCIETY", 2000);
   }, 200);
 
 }, 4000);
