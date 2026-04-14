@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>School Selector</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
@@ -13,9 +14,28 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url('download.jpg') center/cover;
   overflow: hidden;
   color: #e5e5e5;
+}
+
+/* VIDEO */
+.video-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+}
+.video-bg video {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
+
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: -1;
 }
 
 /* LOADER */
@@ -26,15 +46,29 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-  background: rgba(0,0,0,0.6);
+  gap: 16px;
+  background: rgba(0,0,0,0.95);
   z-index: 9999;
 }
 
-.logo {
+/* HACK TEXT */
+#hackText {
   font-family: monospace;
-  font-size: 20px;
-  letter-spacing: 3px;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+/* SPINNER */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* WRAPPER */
@@ -44,86 +78,19 @@ body {
   align-items: center;
 }
 
-/* OUTER CARD (NO TRANSFORM HERE) */
-.card-shell {
-  position: relative;
-}
-
-/* INNER CARD (ONLY THIS IS TILTED) */
+/* CARD */
 .card {
   width: 620px;
   max-width: 92vw;
   padding: 60px;
   border-radius: 16px;
-  background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(30px);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(40px);
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 25px 60px rgba(0,0,0,0.7);
-
   position: relative;
-  will-change: transform;
-  transition: transform 0.15s ease;
-}
-
-/* TITLE */
-#logoMain {
-  font-family: monospace;
-  font-size: 30px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 30px;
-  letter-spacing: 4px;
-}
-
-/* DROPDOWN (NOW OUTSIDE TILTED ELEMENT SAFELY) */
-.dropdown {
-  position: relative;
-  z-index: 1000;
-}
-
-.dropdown-btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.05);
-  border: 2px solid rgba(255,255,255,0.5);
-  cursor: pointer;
-  font-family: monospace;
-  font-size: 18px;
-}
-
-.dropdown-content {
-  position: absolute;
-  top: 110%;
-  width: 100%;
-  background: rgba(0,0,0,0.92);
-  border-radius: 16px;
-  display: none;
-  z-index: 99999;
-}
-
-.dropdown.active .dropdown-content {
-  display: block;
-}
-
-.dropdown-content div {
-  padding: 14px;
-  cursor: pointer;
-}
-
-.dropdown-content div:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-/* BUTTON */
-.action-btn {
-  width: 160px;
-  padding: 14px;
-  border-radius: 14px;
-  background: black;
-  color: white;
-  border: 1px solid rgba(255,255,255,0.2);
-  display: none;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease;
 }
 
 /* EDGE GLOW */
@@ -136,7 +103,7 @@ body {
   background: linear-gradient(120deg, #a855f7, #ffffff, #a855f7);
   background-size: 200% 200%;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: 0.3s;
   pointer-events: none;
 
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -159,141 +126,205 @@ body {
 .glow {
   position: absolute;
   inset: 0;
-  pointer-events: none;
   border-radius: 16px;
+  pointer-events: none;
   background: radial-gradient(circle at var(--x, 50%) var(--y, 50%),
-    rgba(255,255,255,0.25),
+    rgba(255,255,255,0.20),
     transparent 60%);
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: 0.15s;
 }
-
 .card:hover .glow {
   opacity: 1;
 }
 
-/* MOBILE */
-@media (max-width: 768px) {
-  .wrapper {
-    flex-direction: column;
-  }
+/* TITLE */
+#logoMain {
+  font-family: monospace;
+  font-size: 30px;
+  text-align: center;
+  margin-bottom: 30px;
+}
 
-  .action-btn {
-    width: 100%;
-  }
+/* DROPDOWN */
+.dropdown {
+  position: relative;
+}
+.dropdown-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.25);
+  cursor: pointer;
+}
+.dropdown-content {
+  position: absolute;
+  top: 110%;
+  width: 100%;
+  background: rgba(0,0,0,0.9);
+  border-radius: 14px;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: 0.25s;
+  z-index: 10;
+}
+.dropdown.active .dropdown-content {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.dropdown-content div {
+  padding: 14px;
+  cursor: pointer;
+}
+.dropdown-content div:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+/* BUTTON */
+.action-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: black;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  display: none;
+  margin-top: 20px;
 }
 </style>
 </head>
 
 <body>
 
+<div class="video-bg">
+  <video autoplay muted loop playsinline>
+    <source src="rawalbgvideo.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div class="overlay"></div>
+
 <!-- LOADER -->
 <div id="loader">
-  <div id="logoLoad" class="logo">RAWAL EDUCATIONAL SOCIETY</div>
-  <div id="loadingText" class="logo">Initializing...</div>
+  <div id="hackText"></div>
+  <div class="spinner"></div>
 </div>
 
 <!-- MAIN -->
 <div id="mainContent" class="hidden">
-
   <div class="wrapper">
 
-    <div class="card-shell">
+    <div class="card" id="card">
+      <div class="glow"></div>
 
-      <div id="card" class="card">
-        <div class="glow"></div>
+      <div id="logoMain">RAWAL EDUCATIONAL SOCIETY</div>
 
-        <div id="logoMain">RAWAL EDUCATIONAL SOCIETY</div>
-
-        <div class="dropdown" id="dropdown">
-          <div class="dropdown-btn" onclick="toggleDropdown()" id="selected">
-            Choose School
-          </div>
-
-          <div class="dropdown-content">
-            <div onclick="selectSchool('https://rawalpublicschool.com','Rawal Public School')">Rawal Public School</div>
-            <div onclick="selectSchool('https://rawalinternationalschool.com','Rawal International School')">Rawal International School</div>
-            <div onclick="selectSchool('https://rawalbsk.com','Rawal BSK School')">Rawal BSK School</div>
-            <div onclick="selectSchool('https://rawalconventschool.com','Rawal Convent School')">Rawal Convent School</div>
-          </div>
+      <div class="dropdown" id="dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown()" id="selected">
+          Choose School
         </div>
 
+        <div class="dropdown-content">
+          <div onclick="selectSchool('https://rawalpublicschool.com','Rawal Public School')">Rawal Public School</div>
+          <div onclick="selectSchool('https://rawalinternationalschool.com','Rawal International School')">Rawal International School</div>
+          <div onclick="selectSchool('https://rawalbsk.com','Rawal BSK School')">Rawal BSK School</div>
+          <div onclick="selectSchool('https://rawalconventschool.com','Rawal Convent School')">Rawal Convent School</div>
+        </div>
       </div>
 
+      <button class="action-btn" onclick="visitSchool()">VISIT</button>
     </div>
 
-    <button class="action-btn" onclick="visitSchool()">VISIT</button>
-
   </div>
-
 </div>
 
 <script>
-const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
 let selectedUrl = "";
 
-/* FAST HACKER TEXT */
-function hackerText(el, text, duration = 1200) {
-  let start = Date.now();
+/* LOADER (14 sec slower) */
+const loader = document.getElementById("loader");
+const hackText = document.getElementById("hackText");
+const mainContent = document.getElementById("mainContent");
 
-  function run() {
-    let p = (Date.now() - start) / duration;
-    let i = p * text.length;
+const phrases = [
+  "LOADING...",
+  "LOADING UI...",
+  "INITIALIZING CONTENTS...",
+  "LOADED...",
+  "WELCOME TO RAWAL EDUCATIONAL SOCIETY"
+];
 
-    el.innerText = text.split("").map((c, idx) =>
-      idx < i ? text[idx] : chars[Math.floor(Math.random()*chars.length)]
-    ).join("");
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
 
-    if (p < 1) requestAnimationFrame(run);
-    else el.innerText = text;
+let phraseIndex = 0;
+let iterations = 0;
+let current = phrases[0];
+
+const interval = setInterval(() => {
+
+  hackText.innerText = current
+    .split("")
+    .map((char, i) => {
+      if (i < iterations) return current[i];
+      return chars[Math.floor(Math.random() * chars.length)];
+    })
+    .join("");
+
+  if (iterations < current.length) {
+    iterations += 0.25; // 🔥 slower typing
+  } else {
+    if (phraseIndex < phrases.length - 1) {
+      phraseIndex++;
+      current = phrases[phraseIndex];
+      iterations = 0;
+    } else {
+      clearInterval(interval);
+
+      loader.style.transition = "opacity 1s ease";
+      loader.style.opacity = "0";
+
+      setTimeout(() => {
+        loader.style.display = "none";
+        mainContent.classList.remove("hidden");
+      }, 1000);
+    }
   }
-  run();
-}
 
-/* LOADER */
-setTimeout(() => {
-  hackerText(document.getElementById("logoLoad"), "RAWAL EDUCATIONAL SOCIETY", 1300);
-  hackerText(document.getElementById("loadingText"), "LOADING COMPLETE", 1300);
-}, 500);
+}, 60); // 🔥 slower loop
 
-setTimeout(() => {
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('mainContent').classList.remove('hidden');
-}, 2200);
 
 /* DROPDOWN */
 function toggleDropdown() {
   document.getElementById('dropdown').classList.toggle('active');
 }
 
-/* SELECT */
 function selectSchool(url, name) {
   selectedUrl = url;
   document.getElementById('selected').innerText = name;
-  document.getElementById('dropdown').classList.remove('active');
   document.querySelector('.action-btn').style.display = 'block';
+  document.getElementById('dropdown').classList.remove('active');
 }
 
-/* VISIT */
 function visitSchool() {
   if (!selectedUrl) return alert("Select school first");
   window.location.href = selectedUrl;
 }
 
-/* TILT */
+/* TILT EFFECT */
 const card = document.getElementById('card');
-const glow = document.querySelector('.glow');
 
 let mx = 0, my = 0, cx = 0, cy = 0, raf;
 
 card.addEventListener('mousemove', (e) => {
   const r = card.getBoundingClientRect();
-
   mx = e.clientX - r.left;
   my = e.clientY - r.top;
 
-  card.style.setProperty('--x', `${(mx/r.width)*100}%`);
-  card.style.setProperty('--y', `${(my/r.height)*100}%`);
+  card.style.setProperty('--x', (mx/r.width)*100 + "%");
+  card.style.setProperty('--y', (my/r.height)*100 + "%");
 
   if (!raf) animate();
 });
@@ -305,7 +336,6 @@ function animate() {
   cy += (my - cy) * 0.12;
 
   const r = card.getBoundingClientRect();
-
   const rx = (cy/r.height - 0.5) * 8;
   const ry = (cx/r.width - 0.5) * 8;
 
