@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPS Student Portal – Rawal Public School</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & ROOT ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#080810;--bg2:#0d0d18;--bg3:#12121f;--bg4:#18182a;
+  --card:rgba(255,255,255,0.03);--card2:rgba(255,255,255,0.05);
+  --white:#fff;--off:#e8e8f0;--muted:rgba(255,255,255,0.4);--dim:rgba(255,255,255,0.15);
+  --border:rgba(255,255,255,0.07);--bh:rgba(255,255,255,0.18);
+  --accent:#6c63ff;--accent2:#a78bfa;--accent-dim:rgba(108,99,255,0.12);--accent-b:rgba(108,99,255,0.3);
+  --green:#34d399;--green-dim:rgba(52,211,153,0.1);--green-b:rgba(52,211,153,0.25);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,0.1);--amber-b:rgba(251,191,36,0.25);
+  --red:#f87171;--red-dim:rgba(248,113,113,0.1);--red-b:rgba(248,113,113,0.25);
+  --blue:#60a5fa;--blue-dim:rgba(96,165,250,0.1);--blue-b:rgba(96,165,250,0.25);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden}
+
+/* ── PAGE SYSTEM ── */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* ════════════════════════════════════
+   LOGIN PAGE
+════════════════════════════════════ */
+#loginPage{
+  display:none;min-height:100vh;
+  background:radial-gradient(ellipse at 20% 50%,rgba(108,99,255,0.08) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(167,139,250,0.05) 0%,transparent 50%),
+             var(--bg);
+  align-items:center;justify-content:center;
+}
+#loginPage.active{display:flex}
+
+.login-container{width:100%;max-width:440px;padding:20px}
+
+.login-brand{text-align:center;margin-bottom:36px}
+.login-logo{
+  width:64px;height:64px;border-radius:18px;margin:0 auto 16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:20px;font-weight:700;
+  box-shadow:0 0 40px rgba(108,99,255,0.35);
+}
+.login-brand h1{font-family:'Cinzel',serif;font-size:20px;font-weight:700;letter-spacing:1px;margin-bottom:4px}
+.login-brand p{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+
+.login-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);border-radius:20px;
+  padding:36px 32px;position:relative;overflow:hidden;
+}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(108,99,255,0.5),transparent)}
+
+/* ROLE TOGGLE */
+.role-toggle{display:grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:28px;gap:4px}
+.role-tab{
+  padding:12px;border-radius:9px;text-align:center;cursor:pointer;
+  transition:all .25s;border:1px solid transparent;
+}
+.role-tab .rt-icon{font-size:20px;margin-bottom:6px;display:block}
+.role-tab .rt-label{font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted)}
+.role-tab .rt-sub{font-size:10px;color:rgba(255,255,255,0.25);margin-top:2px}
+.role-tab.active{background:var(--accent-dim);border-color:var(--accent-b)}
+.role-tab.active .rt-label{color:var(--accent2)}
+
+/* FORM */
+.form-step{display:none}
+.form-step.active{display:block}
+.step-heading{font-family:'Cinzel',serif;font-size:17px;font-weight:600;margin-bottom:6px}
+.step-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;font-weight:300}
+
+.lfield{margin-bottom:16px}
+.lfield label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.lfield input{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+  padding:13px 16px;color:var(--white);
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;
+  outline:none;transition:border-color .2s,background .2s;
+}
+.lfield input::placeholder{color:rgba(255,255,255,0.15)}
+.lfield input:focus{border-color:var(--accent-b);background:rgba(108,99,255,0.05)}
+.lfield input.err{border-color:var(--red-b)}
+.lerr{font-size:11px;color:var(--red);margin-top:6px;display:none}
+.lerr.on{display:block}
+
+/* OTP */
+.otp-boxes{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:8px}
+.otp-box{
+  text-align:center;padding:14px 4px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px;color:var(--white);font-size:18px;font-weight:600;
+  font-family:'JetBrains Mono',monospace;outline:none;
+  transition:border-color .2s;
+}
+.otp-box:focus{border-color:var(--accent-b);background:rgba(108,99,255,0.06)}
+.otp-hint{font-size:11px;color:var(--muted);margin-bottom:18px;font-style:italic}
+
+.lbtn{
+  width:100%;padding:14px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-family:'DM Sans',sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;
+  border:none;cursor:pointer;
+  transition:opacity .2s,transform .15s;
+  margin-top:4px;
+}
+.lbtn:hover:not(:disabled){opacity:0.9;transform:translateY(-1px)}
+.lbtn:disabled{opacity:0.4;cursor:not-allowed}
+.lbtn-ghost{
+  width:100%;padding:11px;border-radius:10px;margin-top:8px;
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+  transition:all .2s;
+}
+.lbtn-ghost:hover{color:var(--white);border-color:var(--bh)}
+.otp-resend{text-align:center;font-size:11px;color:var(--muted);margin-top:12px}
+.otp-resend button{background:none;border:none;color:var(--accent2);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;text-decoration:underline}
+
+/* DEMO ACCOUNTS */
+.demo-panel{margin-top:20px;padding:14px 16px;background:var(--amber-dim);border:1px solid var(--amber-b);border-radius:10px}
+.demo-panel h4{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:10px}
+.demo-account{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 0;border-bottom:1px solid rgba(251,191,36,0.1);
+  font-size:12px;cursor:pointer;transition:opacity .2s;
+}
+.demo-account:last-child{border-bottom:none}
+.demo-account:hover{opacity:0.75}
+.demo-account .da-name{color:var(--off);font-weight:500}
+.demo-account .da-cred{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px}
+.demo-account .da-fill{font-size:10px;color:var(--amber);letter-spacing:1px;text-transform:uppercase}
+
+/* ════════════════════════════════════
+   SHARED DASH LAYOUT
+════════════════════════════════════ */
+.dash-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+/* TOPBAR */
+.topbar{
+  grid-column:1/-1;
+  height:62px;background:rgba(8,8,16,0.95);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;position:sticky;top:0;z-index:100;
+}
+.tb-brand{display:flex;align-items:center;gap:12px}
+.tb-logo{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:11px;font-weight:700;
+}
+.tb-name{font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:1px}
+.tb-name small{display:block;font-size:9px;font-weight:400;letter-spacing:3px;color:var(--muted);font-family:'DM Sans',sans-serif}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-pill{
+  padding:5px 12px;border-radius:20px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  border:1px solid var(--border);background:var(--card);color:var(--muted);
+}
+.tb-pill.accent{border-color:var(--accent-b);background:var(--accent-dim);color:var(--accent2)}
+.tb-pill.green{border-color:var(--green-b);background:var(--green-dim);color:var(--green)}
+.tb-pill.amber{border-color:var(--amber-b);background:var(--amber-dim);color:var(--amber)}
+.tb-logout{
+  padding:6px 14px;border-radius:7px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;
+}
+.tb-logout:hover{color:var(--white);border-color:var(--bh)}
+
+/* SIDEBAR */
+.sidebar{
+  background:rgba(13,13,24,0.8);border-right:1px solid var(--border);
+  padding:20px 0;position:sticky;top:62px;height:calc(100vh - 62px);
+  overflow-y:auto;
+}
+.sb-section{margin-bottom:4px}
+.sb-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 20px 5px}
+.sb-item{
+  display:flex;align-items:center;gap:10px;padding:10px 20px;
+  color:var(--muted);cursor:pointer;transition:all .2s;
+  border-left:2px solid transparent;user-select:none;
+}
+.sb-item:hover{color:var(--white);background:rgba(255,255,255,0.03)}
+.sb-item.active{color:var(--white);background:rgba(108,99,255,0.08);border-left-color:var(--accent)}
+.sb-item .sb-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.sb-item .sb-text{font-size:13px;flex:1}
+.sb-item .sb-badge{font-size:9px;padding:2px 7px;border-radius:10px;background:var(--red-dim);border:1px solid var(--red-b);color:var(--red)}
+
+/* MAIN CONTENT */
+.main-content{padding:28px 32px;background:var(--bg)}
+
+/* PAGE HEADER */
+.pg-head{margin-bottom:24px}
+.pg-eye{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.pg-title{font-family:'Cinzel',serif;font-size:22px;font-weight:600;letter-spacing:.3px}
+.pg-sub{font-size:13px;color:var(--muted);margin-top:4px;font-weight:300}
+
+/* PANELS */
+.panel{display:none}
+.panel.active{display:block}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:18px;transition:border-color .2s,background .2s;cursor:default;
+}
+.stat-card:hover{border-color:var(--bh);background:var(--card2)}
+.sc-icon{font-size:20px;margin-bottom:10px}
+.sc-val{font-family:'Cinzel',serif;font-size:24px;font-weight:700;line-height:1;margin-bottom:4px}
+.sc-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.sc-note{font-size:11px;color:var(--muted);margin-top:6px;font-style:italic}
+.sc-green{border-color:var(--green-b);background:rgba(52,211,153,0.03)}
+.sc-amber{border-color:var(--amber-b);background:rgba(251,191,36,0.03)}
+.sc-red{border-color:var(--red-b);background:rgba(248,113,113,0.03)}
+.sc-accent{border-color:var(--accent-b);background:var(--accent-dim)}
+
+.prog-bar{height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden;margin-top:8px}
+.prog-fill{height:100%;border-radius:2px;transition:width .6s ease}
+
+/* CARDS */
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden}
+.info-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent)}
+.card-title{font-family:'Cinzel',serif;font-size:14px;font-weight:600;margin-bottom:4px}
+.card-sub{font-size:12px;color:var(--muted);margin-bottom:16px;font-weight:300}
+
+/* TABLE */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.tbl-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tbl-title{font-family:'Cinzel',serif;font-size:13px;font-weight:600}
+.tbl-sub{font-size:11px;color:var(--muted)}
+table{width:100%;border-collapse:collapse}
+th{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:11px 20px;text-align:left;border-bottom:1px solid var(--border);font-weight:400}
+td{padding:11px 20px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.03);color:rgba(255,255,255,0.75);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500}
+.bg-green{background:var(--green-dim);border:1px solid var(--green-b);color:var(--green)}
+.bg-amber{background:var(--amber-dim);border:1px solid var(--amber-b);color:var(--amber)}
+.bg-red{background:var(--red-dim);border:1px solid var(--red-b);color:var(--red)}
+.bg-blue{background:var(--blue-dim);border:1px solid var(--blue-b);color:var(--blue)}
+.bg-accent{background:var(--accent-dim);border:1px solid var(--accent-b);color:var(--accent2)}
+.bg-grey{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted)}
+
+/* PROFILE CARD */
+.profile-wrap{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start}
+.avatar{
+  width:70px;height:70px;border-radius:18px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent-dim),rgba(167,139,250,0.15));
+  border:1px solid var(--accent-b);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--accent2);
+}
+.profile-name{font-family:'Cinzel',serif;font-size:20px;font-weight:600;margin-bottom:3px}
+.profile-sub{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.detail-item{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:9px;padding:11px 13px}
+.di-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.di-val{font-size:13px;color:var(--off)}
+
+/* BUTTONS */
+.btn{padding:9px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-ghost:hover{color:var(--white);border-color:var(--bh)}
+.btn-green{background:var(--green-dim);border:1px solid var(--green-b);color:var(--green)}
+.btn-green:hover{background:rgba(52,211,153,0.2)}
+.btn-red{background:var(--red-dim);border:1px solid var(--red-b);color:var(--red)}
+.btn-red:hover{background:rgba(248,113,113,0.18)}
+.btn-amber{background:var(--amber-dim);border:1px solid var(--amber-b);color:var(--amber)}
+.btn-amber:hover{background:rgba(251,191,36,0.18)}
+.btn-sm{padding:6px 13px;font-size:9px}
+
+/* FORM FIELDS */
+.fgroup{margin-bottom:14px}
+.fgroup label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.fgroup input,.fgroup select,.fgroup textarea{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);border-radius:9px;
+  padding:11px 14px;color:var(--white);
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;
+  outline:none;transition:border-color .2s,background .2s;
+  -webkit-appearance:none;appearance:none;
+}
+.fgroup input::placeholder,.fgroup textarea::placeholder{color:rgba(255,255,255,0.15)}
+.fgroup input:focus,.fgroup select:focus,.fgroup textarea:focus{border-color:var(--accent-b);background:rgba(108,99,255,0.04)}
+.fgroup select{cursor:pointer}
+.fgroup select option{background:#141428;color:#fff}
+.fgroup textarea{resize:vertical;min-height:90px;line-height:1.65}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* CHIP SELECTOR */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px}
+.chip{
+  padding:6px 13px;border-radius:6px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.02);color:var(--muted);
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;user-select:none;
+}
+.chip:hover{border-color:var(--bh);color:var(--white)}
+.chip.on{border-color:var(--accent-b);background:var(--accent-dim);color:var(--accent2)}
+
+/* CHECKBOX ROW */
+.chk-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;border:1px solid rgba(255,255,255,0.08);border-radius:9px;
+  background:rgba(255,255,255,0.02);cursor:pointer;transition:all .2s;
+  margin-bottom:8px;
+}
+.chk-row:hover{background:var(--card2)}
+.chk-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;cursor:pointer}
+.chk-row-label{font-size:13px;color:rgba(255,255,255,0.7);flex:1}
+.chk-row-sub{font-size:11px;color:var(--muted)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.on{display:flex}
+.modal-box{background:#0f0f1e;border:1px solid var(--border);border-radius:18px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(108,99,255,0.4),transparent);border-radius:18px 18px 0 0}
+.modal-hd{padding:22px 26px 0;display:flex;align-items:flex-start;justify-content:space-between}
+.modal-hd-title{font-family:'Cinzel',serif;font-size:16px;font-weight:600}
+.modal-hd-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.modal-close{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;flex-shrink:0}
+.modal-close:hover{color:var(--white);border-color:var(--bh)}
+.modal-body{padding:18px 26px 26px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);padding:10px 20px;border-radius:9px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:999;white-space:nowrap;max-width:90vw}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.s{background:var(--green-dim);border:1px solid var(--green-b);color:var(--green)}
+.toast.e{background:var(--red-dim);border:1px solid var(--red-b);color:var(--red)}
+.toast.i{background:var(--card2);border:1px solid var(--border);color:var(--muted)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:20px 0}
+.section-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:12px}
+
+/* BUS ROUTE VISUAL */
+.bus-route{display:flex;flex-direction:column;gap:0}
+.bus-stop{display:flex;align-items:center;gap:14px;padding:10px 0}
+.bus-dot{width:12px;height:12px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:0 0 12px rgba(108,99,255,0.5)}
+.bus-line{width:2px;height:24px;background:rgba(108,99,255,0.25);margin-left:5px}
+.bus-stop-name{font-size:13px;color:var(--off)}
+.bus-stop-time{font-size:11px;color:var(--muted);margin-top:2px}
+.bus-stop.current .bus-dot{background:var(--green);box-shadow:0 0 12px rgba(52,211,153,0.5)}
+.bus-stop.current .bus-stop-name{color:var(--green);font-weight:500}
+
+/* ATTENDANCE CALENDAR */
+.att-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+.att-day{width:100%;aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+.att-day.p{background:var(--green-dim);color:var(--green)}
+.att-day.a{background:var(--red-dim);color:var(--red)}
+.att-day.h{background:var(--amber-dim);color:var(--amber)}
+.att-day.empty{background:transparent;color:transparent}
+.att-day.hd{background:rgba(255,255,255,0.04);color:var(--muted);font-weight:400}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
+
+/* MOBILE */
+@media(max-width:768px){
+  .dash-layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main-content{padding:18px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .row2,.row3{grid-template-columns:1fr}
+  .profile-wrap{grid-template-columns:1fr}
+  .topbar{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     LOGIN PAGE
+══════════════════════════════════════════ -->
+<div id="loginPage" class="page active" style="display:flex">
+<div class="login-container">
+  <div class="login-brand">
+    <div class="login-logo">RPS</div>
+    <h1>Student Portal</h1>
+    <p>Rawal Public School · Ballabgarh</p>
+  </div>
+
+  <div class="login-card">
+    <!-- Role Toggle -->
+    <div class="role-toggle">
+      <div class="role-tab active" id="tabStudent" onclick="setRole('student')">
+        <span class="rt-icon">🎒</span>
+        <div class="rt-label">Student</div>
+        <div class="rt-sub">View your records</div>
+      </div>
+      <div class="role-tab" id="tabTeacher" onclick="setRole('teacher')">
+        <span class="rt-icon">👨‍🏫</span>
+        <div class="rt-label">Teacher</div>
+        <div class="rt-sub">Manage school</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Credentials -->
+    <div class="form-step active" id="step1">
+      <div class="step-heading" id="s1title">Student Login</div>
+      <p class="step-sub" id="s1sub">Enter your Roll Number and password to continue.</p>
+      <div class="lfield">
+        <label id="idLabel">Roll Number</label>
+        <input type="text" id="loginId" placeholder="e.g. STU-001" autocomplete="username">
+      </div>
+      <div class="lfield">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Your password" autocomplete="current-password">
+      </div>
+      <div class="lerr on" id="lerr" style="display:none">Incorrect ID or password. Please try again.</div>
+      <button class="lbtn" onclick="doLogin()" style="margin-top:16px">Continue →</button>
+    </div>
+
+    <!-- Step 2: OTP -->
+    <div class="form-step" id="step2">
+      <div class="step-heading">Verify OTP</div>
+      <p class="step-sub" id="otpSub">A 6-digit OTP has been sent to your registered number.</p>
+      <div class="otp-boxes" id="otpBoxes"></div>
+      <div class="otp-hint" id="otpHint">Demo OTP will appear here</div>
+      <div class="lerr" id="otpErr">Incorrect OTP. Try again.</div>
+      <button class="lbtn" onclick="verifyOtp()">Verify & Enter →</button>
+      <div class="otp-resend">Didn't get it? <button onclick="resendOtp()">Resend OTP</button></div>
+      <button class="lbtn-ghost" onclick="backToStep1()">← Back</button>
+    </div>
+  </div>
+
+  <!-- Demo Accounts -->
+  <div class="demo-panel" id="demoPanel">
+    <h4>🧪 Demo Student Accounts</h4>
+    <div id="demoList"></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     STUDENT DASHBOARD
+══════════════════════════════════════════ -->
+<div id="studentPage" class="page">
+  <div class="dash-layout">
+    <div class="topbar" style="grid-column:1/-1">
+      <div class="tb-brand">
+        <div class="tb-logo">RPS</div>
+        <div class="tb-name">Rawal Public School<small>Student Portal</small></div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-pill green" id="stuClassPill">—</div>
+        <div class="tb-pill">2024–25</div>
+        <button class="tb-logout" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="sidebar" id="stuSidebar">
+      <div class="sb-section">
+        <div class="sb-label">My School</div>
+        <div class="sb-item active" onclick="showStu('overview',this)"><span class="sb-icon">🏠</span><span class="sb-text">Overview</span></div>
+        <div class="sb-item" onclick="showStu('attendance',this)"><span class="sb-icon">📅</span><span class="sb-text">Attendance</span></div>
+        <div class="sb-item" onclick="showStu('homework',this)" id="hwLink"><span class="sb-icon">📚</span><span class="sb-text">Homework</span><span class="sb-badge" id="hwBadge" style="display:none">!</span></div>
+        <div class="sb-item" onclick="showStu('classtests',this)"><span class="sb-icon">📝</span><span class="sb-text">Class Tests</span></div>
+        <div class="sb-item" onclick="showStu('results',this)"><span class="sb-icon">📊</span><span class="sb-text">Results</span></div>
+        <div class="sb-item" onclick="showStu('fees',this)"><span class="sb-icon">💳</span><span class="sb-text">Fees</span></div>
+        <div class="sb-item" onclick="showStu('bus',this)"><span class="sb-icon">🚌</span><span class="sb-text">Bus Route</span></div>
+        <div class="sb-item" onclick="showStu('teachers',this)"><span class="sb-icon">👨‍🏫</span><span class="sb-text">Teachers</span></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Account</div>
+        <div class="sb-item" onclick="showStu('profile',this)"><span class="sb-icon">👤</span><span class="sb-text">My Profile</span></div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- OVERVIEW -->
+      <div class="panel active" id="stu-overview">
+        <div class="pg-head">
+          <div class="pg-eye">Dashboard</div>
+          <div class="pg-title" id="stuGreet">Welcome!</div>
+          <div class="pg-sub">Here's your academic snapshot for today.</div>
+        </div>
+        <div class="stat-grid" id="overviewStats"></div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Recent Homework</div></div>
+          <table><thead><tr><th>Subject</th><th>Title</th><th>Due</th><th>Status</th></tr></thead>
+          <tbody id="ovHwTable"></tbody></table>
+        </div>
+        <div class="tbl-wrap" style="margin-top:12px">
+          <div class="tbl-head"><div class="tbl-title">Upcoming Tests</div></div>
+          <table><thead><tr><th>Subject</th><th>Topic</th><th>Date</th><th>Syllabus</th></tr></thead>
+          <tbody id="ovTestTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ATTENDANCE -->
+      <div class="panel" id="stu-attendance">
+        <div class="pg-head">
+          <div class="pg-eye">Records</div>
+          <div class="pg-title">My Attendance</div>
+          <div class="pg-sub">Your attendance record for the current academic session.</div>
+        </div>
+        <div class="stat-grid" id="attStats"></div>
+        <div class="info-card">
+          <div class="card-title">Monthly Breakdown</div>
+          <div class="card-sub">P = Present · A = Absent · H = Holiday</div>
+          <div class="att-cal" id="attCal"></div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Month-wise Summary</div></div>
+          <table><thead><tr><th>Month</th><th>Present</th><th>Absent</th><th>Total</th><th>%</th></tr></thead>
+          <tbody id="attTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- HOMEWORK -->
+      <div class="panel" id="stu-homework">
+        <div class="pg-head">
+          <div class="pg-eye">Assignments</div>
+          <div class="pg-title">Homework</div>
+          <div class="pg-sub">All assignments issued to your class.</div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">All Assignments</div></div>
+          <table><thead><tr><th>Subject</th><th>Title</th><th>Description</th><th>Issued</th><th>Due</th><th>Status</th></tr></thead>
+          <tbody id="hwTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- CLASS TESTS -->
+      <div class="panel" id="stu-classtests">
+        <div class="pg-head">
+          <div class="pg-eye">Assessments</div>
+          <div class="pg-title">Class Tests</div>
+          <div class="pg-sub">Scheduled and past class tests and assessments.</div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Test Schedule</div></div>
+          <table><thead><tr><th>Subject</th><th>Topic / Chapter</th><th>Date</th><th>Max Marks</th><th>Syllabus</th><th>Status</th></tr></thead>
+          <tbody id="testsTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="panel" id="stu-results">
+        <div class="pg-head">
+          <div class="pg-eye">Academic</div>
+          <div class="pg-title">Results</div>
+          <div class="pg-sub">Examination results and mark sheets.</div>
+        </div>
+        <div id="resultsContent"></div>
+      </div>
+
+      <!-- FEES -->
+      <div class="panel" id="stu-fees">
+        <div class="pg-head">
+          <div class="pg-eye">Finance</div>
+          <div class="pg-title">Fee Status</div>
+          <div class="pg-sub">Your fee payment history and dues.</div>
+        </div>
+        <div id="feesContent"></div>
+      </div>
+
+      <!-- BUS -->
+      <div class="panel" id="stu-bus">
+        <div class="pg-head">
+          <div class="pg-eye">Transport</div>
+          <div class="pg-title">Bus Route</div>
+          <div class="pg-sub">Your school transport details and route map.</div>
+        </div>
+        <div id="busContent"></div>
+      </div>
+
+      <!-- TEACHERS -->
+      <div class="panel" id="stu-teachers">
+        <div class="pg-head">
+          <div class="pg-eye">Faculty</div>
+          <div class="pg-title">Teachers & Contact</div>
+          <div class="pg-sub">Contact details and information of your class teachers.</div>
+        </div>
+        <div id="teachersContent"></div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="panel" id="stu-profile">
+        <div class="pg-head">
+          <div class="pg-eye">Account</div>
+          <div class="pg-title">My Profile</div>
+          <div class="pg-sub">Your personal and contact information on record.</div>
+        </div>
+        <div id="profileContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TEACHER DASHBOARD
+══════════════════════════════════════════ -->
+<div id="teacherPage" class="page">
+  <div class="dash-layout">
+    <div class="topbar" style="grid-column:1/-1">
+      <div class="tb-brand">
+        <div class="tb-logo">RPS</div>
+        <div class="tb-name">Rawal Public School<small>Teacher Portal</small></div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-pill amber">Teacher Access</div>
+        <div class="tb-pill" id="tNamePill">—</div>
+        <button class="tb-logout" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Management</div>
+        <div class="sb-item active" onclick="showTch('overview',this)"><span class="sb-icon">🏠</span><span class="sb-text">Overview</span></div>
+        <div class="sb-item" onclick="showTch('students',this)"><span class="sb-icon">👥</span><span class="sb-text">Students</span></div>
+        <div class="sb-item" onclick="showTch('attendance',this)"><span class="sb-icon">📅</span><span class="sb-text">Attendance</span></div>
+        <div class="sb-item" onclick="showTch('homework',this)"><span class="sb-icon">📚</span><span class="sb-text">Homework</span></div>
+        <div class="sb-item" onclick="showTch('tests',this)"><span class="sb-icon">📝</span><span class="sb-text">Class Tests</span></div>
+        <div class="sb-item" onclick="showTch('results',this)"><span class="sb-icon">📊</span><span class="sb-text">Results</span></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Records</div>
+        <div class="sb-item" onclick="showTch('fees',this)"><span class="sb-icon">💳</span><span class="sb-text">Fee Records</span></div>
+        <div class="sb-item" onclick="showTch('contacts',this)"><span class="sb-icon">📞</span><span class="sb-text">Student Contacts</span></div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- T-OVERVIEW -->
+      <div class="panel active" id="tch-overview">
+        <div class="pg-head">
+          <div class="pg-eye">Admin Dashboard</div>
+          <div class="pg-title" id="tGreet">Good Day!</div>
+          <div class="pg-sub">School management overview for today.</div>
+        </div>
+        <div class="stat-grid" id="tchStats"></div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Today's Attendance Summary</div></div>
+          <table><thead><tr><th>Class</th><th>Present</th><th>Absent</th><th>Total</th><th>Rate</th><th>Marked</th></tr></thead>
+          <tbody id="tchAttSummary"></tbody></table>
+        </div>
+      </div>
+
+      <!-- T-STUDENTS -->
+      <div class="panel" id="tch-students">
+        <div class="pg-head">
+          <div class="pg-eye">Roster</div>
+          <div class="pg-title">Student Management</div>
+          <div class="pg-sub">Add, remove, edit, and move students between classes.</div>
+        </div>
+        <div class="info-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <div class="row2" style="flex:1;max-width:440px;margin:0">
+              <div class="fgroup" style="margin:0"><label>Filter by Class</label><select id="filterClass" onchange="renderStudentTable()"><option value="">All Classes</option></select></div>
+              <div class="fgroup" style="margin:0;display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="openModal('addStuModal')" style="width:100%">+ Add Student</button></div>
+            </div>
+            <button class="btn btn-amber" onclick="openModal('massEditModal')">⚡ Mass Edit</button>
+          </div>
+          <div class="tbl-wrap" style="margin:0">
+            <div class="tbl-head"><div class="tbl-title" id="stuListTitle">All Students</div><button class="btn btn-sm btn-ghost" onclick="exportStudents()">Export</button></div>
+            <table><thead><tr><th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()" style="accent-color:var(--accent)"></th><th>Roll No</th><th>Name</th><th>Class</th><th>Parent Phone</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="stuTable"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- T-ATTENDANCE -->
+      <div class="panel" id="tch-attendance">
+        <div class="pg-head">
+          <div class="pg-eye">Daily</div>
+          <div class="pg-title">Mark Attendance</div>
+          <div class="pg-sub">Select class and mark attendance for each student.</div>
+        </div>
+        <div class="info-card">
+          <div class="card-title">Select Class & Date</div>
+          <div class="row2" style="margin-bottom:16px">
+            <div class="fgroup"><label>Class</label><select id="attClass" onchange="loadAttStudents()"><option value="">-- Select Class --</option></select></div>
+            <div class="fgroup"><label>Date</label><input type="date" id="attDate" onchange="loadAttStudents()"></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:14px">
+            <button class="btn btn-green btn-sm" onclick="markAll('present')">✓ All Present</button>
+            <button class="btn btn-red btn-sm" onclick="markAll('absent')">✗ All Absent</button>
+          </div>
+          <div id="attList"></div>
+          <button class="btn btn-primary" onclick="saveAtt()" style="margin-top:14px">Save Attendance</button>
+        </div>
+      </div>
+
+      <!-- T-HOMEWORK -->
+      <div class="panel" id="tch-homework">
+        <div class="pg-head">
+          <div class="pg-eye">Assignments</div>
+          <div class="pg-title">Send Homework</div>
+          <div class="pg-sub">Issue homework to one or multiple classes at once.</div>
+        </div>
+        <div class="info-card">
+          <div class="card-title">New Assignment</div>
+          <div class="card-sub">Select classes, subject and fill in the details.</div>
+          <div class="fgroup"><label>Target Classes *</label><div class="chips" id="hwClasses"></div></div>
+          <div class="row2">
+            <div class="fgroup"><label>Subject *</label><select id="hwSub"><option value="">-- Subject --</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>Computer Science</option><option>Sanskrit</option><option>Physical Education</option><option>Art</option></select></div>
+            <div class="fgroup"><label>Due Date *</label><input type="date" id="hwDue"></div>
+          </div>
+          <div class="fgroup"><label>Title *</label><input type="text" id="hwTitle" placeholder="e.g. Chapter 5 – Exercise 5.1 to 5.3"></div>
+          <div class="fgroup"><label>Instructions</label><textarea id="hwDesc" placeholder="Add specific instructions or notes for students…"></textarea></div>
+          <button class="btn btn-primary" onclick="sendHw()">Send Homework →</button>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Recent Assignments</div></div>
+          <table><thead><tr><th>Classes</th><th>Subject</th><th>Title</th><th>Issued</th><th>Due</th><th>Action</th></tr></thead>
+          <tbody id="tchHwTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- T-TESTS -->
+      <div class="panel" id="tch-tests">
+        <div class="pg-head">
+          <div class="pg-eye">Assessments</div>
+          <div class="pg-title">Class Tests</div>
+          <div class="pg-sub">Schedule class tests and upload results.</div>
+        </div>
+        <div class="info-card">
+          <div class="card-title">Schedule New Test</div>
+          <div class="fgroup"><label>Target Classes *</label><div class="chips" id="testClasses"></div></div>
+          <div class="row3">
+            <div class="fgroup"><label>Subject *</label><select id="testSub"><option value="">-- Subject --</option><option>Mathematics</option><option>Science</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Hindi</option><option>Social Science</option><option>Computer Science</option></select></div>
+            <div class="fgroup"><label>Date *</label><input type="date" id="testDate"></div>
+            <div class="fgroup"><label>Max Marks</label><input type="number" id="testMax" placeholder="e.g. 25"></div>
+          </div>
+          <div class="fgroup"><label>Topic / Syllabus *</label><input type="text" id="testTopic" placeholder="e.g. Chapters 3 & 4 – Chemical Reactions"></div>
+          <button class="btn btn-primary" onclick="scheduleTest()">Schedule Test →</button>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">All Tests</div></div>
+          <table><thead><tr><th>Classes</th><th>Subject</th><th>Topic</th><th>Date</th><th>Marks</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="tchTestTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- T-RESULTS -->
+      <div class="panel" id="tch-results">
+        <div class="pg-head">
+          <div class="pg-eye">Academic</div>
+          <div class="pg-title">Upload Results</div>
+          <div class="pg-sub">Enter and publish examination results for students.</div>
+        </div>
+        <div class="info-card">
+          <div class="card-title">Enter Marks</div>
+          <div class="row2">
+            <div class="fgroup"><label>Exam</label><select id="resExam"><option>Mid-Term 2025</option><option>Final Term 2025</option><option>Unit Test 1</option><option>Unit Test 2</option></select></div>
+            <div class="fgroup"><label>Class</label><select id="resClass" onchange="loadResStudents()"><option value="">-- Select Class --</option></select></div>
+          </div>
+          <div id="resList"><p style="color:var(--muted);font-size:13px">Select a class to enter marks.</p></div>
+          <button class="btn btn-primary" onclick="saveResults()" style="margin-top:14px">Save Results</button>
+        </div>
+      </div>
+
+      <!-- T-FEES -->
+      <div class="panel" id="tch-fees">
+        <div class="pg-head">
+          <div class="pg-eye">Finance</div>
+          <div class="pg-title">Fee Records</div>
+          <div class="pg-sub">Overview and management of student fee payments.</div>
+        </div>
+        <div class="stat-grid" id="feeStats"></div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Student Fee Status</div><div style="display:flex;gap:8px"><select id="feeFilterClass" onchange="renderFees()" style="background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--white);font-size:11px;outline:none"><option value="">All Classes</option></select><button class="btn btn-green btn-sm" onclick="markFeesPaid()">Mark Selected Paid</button></div></div>
+          <table><thead><tr><th><input type="checkbox" style="accent-color:var(--accent)"></th><th>Student</th><th>Class</th><th>Amount</th><th>Month</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="feesTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- T-CONTACTS -->
+      <div class="panel" id="tch-contacts">
+        <div class="pg-head">
+          <div class="pg-eye">Directory</div>
+          <div class="pg-title">Student Contacts</div>
+          <div class="pg-sub">Parent and guardian contact details for all students.</div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Contact Directory</div><select id="contactFilter" onchange="renderContacts()" style="background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--white);font-size:11px;outline:none"><option value="">All Classes</option></select></div>
+          <table><thead><tr><th>Name</th><th>Class</th><th>Roll No</th><th>Parent</th><th>Phone</th><th>Address</th><th>Action</th></tr></thead>
+          <tbody id="contactTable"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="addStuModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div><div class="modal-hd-title" id="addStuTitle">Add New Student</div><div class="modal-hd-sub">Fill in all required fields</div></div>
+      <button class="modal-close" onclick="closeModal('addStuModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editStuId">
+      <div class="row2"><div class="fgroup"><label>Roll Number *</label><input type="text" id="sRoll" placeholder="STU-XXX"></div><div class="fgroup"><label>Class *</label><select id="sClass"></select></div></div>
+      <div class="row2"><div class="fgroup"><label>First Name *</label><input type="text" id="sFn" placeholder="First name"></div><div class="fgroup"><label>Last Name *</label><input type="text" id="sLn" placeholder="Last name"></div></div>
+      <div class="row2"><div class="fgroup"><label>Date of Birth</label><input type="date" id="sDob"></div><div class="fgroup"><label>Gender</label><select id="sGender"><option>Male</option><option>Female</option><option>Other</option></select></div></div>
+      <div class="fgroup"><label>Address</label><input type="text" id="sAddr" placeholder="Full address"></div>
+      <div class="row2"><div class="fgroup"><label>Parent Name</label><input type="text" id="sParent" placeholder="Parent / Guardian"></div><div class="fgroup"><label>Parent Phone *</label><input type="tel" id="sPhone" placeholder="10-digit number" maxlength="10"></div></div>
+      <div class="row2"><div class="fgroup"><label>Transport</label><select id="sTransport"><option>School Bus</option><option>Private Vehicle</option><option>Walk / Cycle</option></select></div><div class="fgroup"><label>Bus Route / Stop</label><input type="text" id="sBus" placeholder="e.g. Route 3 – Sector 64"></div></div>
+      <div class="fgroup"><label>Password</label><input type="text" id="sPass" placeholder="Set login password"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('addStuModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveStu()">Save Student</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="moveClassModal">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-hd">
+      <div><div class="modal-hd-title">Move Student</div><div class="modal-hd-sub" id="moveSub">Transferring to new class</div></div>
+      <button class="modal-close" onclick="closeModal('moveClassModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="moveStuId">
+      <div class="fgroup"><label>New Class *</label><select id="moveToClass"></select></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('moveClassModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmMove()">Move Student</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="massEditModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div><div class="modal-hd-title">Mass Edit</div><div class="modal-hd-sub">Apply bulk changes to selected students</div></div>
+      <button class="modal-close" onclick="closeModal('massEditModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Select students in the table first, then apply an action here.</p>
+      <div class="fgroup"><label>Move Selected to Class</label><select id="massMoveClass"></select></div>
+      <div class="fgroup"><label>Change Fee Status to</label><select id="massFeeStatus"><option value="">-- No change --</option><option value="paid">Paid</option><option value="pending">Pending</option></select></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('massEditModal')">Cancel</button>
+        <button class="btn btn-amber" onclick="applyMassEdit()">Apply Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════ */
+const CLASSES = ['Nursery','LKG','UKG','I-A','I-B','II-A','II-B','III-A','III-B','IV-A','IV-B','V-A','V-B','VI-A','VI-B','VII-A','VII-B','VIII-A','VIII-B','IX-A','IX-B','X-A','X-B','XI-Sci','XI-Com','XII-Sci','XII-Com'];
+
+/* 10 Student Accounts */
+let students = [
+  {id:'STU-001',roll:'STU-001',pass:'rps123',name:'Arjun Sharma',class:'X-A',dob:'2010-03-15',gender:'Male',phone:'9876543210',parent:'Ramesh Sharma',address:'House 12, Sector-64, Ballabgarh',transport:'School Bus',bus:'Route 3 – Sector 64',email:'arjun@gmail.com',feeStatus:'paid'},
+  {id:'STU-002',roll:'STU-002',pass:'rps456',name:'Priya Singh',class:'X-A',dob:'2010-06-22',gender:'Female',phone:'9823456789',parent:'Suresh Singh',address:'B-45, Patel Nagar, Ballabgarh',transport:'Private Vehicle',bus:'',email:'priya@gmail.com',feeStatus:'pending'},
+  {id:'STU-003',roll:'STU-003',pass:'rps789',name:'Rahul Verma',class:'X-B',dob:'2010-01-10',gender:'Male',phone:'9012345678',parent:'Vinod Verma',address:'Flat 302, Green Park, Faridabad',transport:'School Bus',bus:'Route 1 – Sector 14',email:'rahul@gmail.com',feeStatus:'paid'},
+  {id:'STU-004',roll:'STU-004',pass:'student4',name:'Sneha Gupta',class:'IX-A',dob:'2011-08-05',gender:'Female',phone:'9754321098',parent:'Anil Gupta',address:'Sector-21, NIT, Faridabad',transport:'Walk / Cycle',bus:'',email:'sneha@gmail.com',feeStatus:'paid'},
+  {id:'STU-005',roll:'STU-005',pass:'student5',name:'Karan Mehta',class:'IX-A',dob:'2011-11-18',gender:'Male',phone:'9876500001',parent:'Deepak Mehta',address:'Sector-58, Ballabgarh',transport:'School Bus',bus:'Route 2 – Sector 58',email:'karan@gmail.com',feeStatus:'pending'},
+  {id:'STU-006',roll:'STU-006',pass:'student6',name:'Ananya Joshi',class:'VIII-A',dob:'2012-04-25',gender:'Female',phone:'9988776655',parent:'Manoj Joshi',address:'Green Colony, Sector 31, Faridabad',transport:'School Bus',bus:'Route 4 – Sector 31',email:'ananya@gmail.com',feeStatus:'paid'},
+  {id:'STU-007',roll:'STU-007',pass:'student7',name:'Rohan Kapoor',class:'XI-Sci',dob:'2009-07-13',gender:'Male',phone:'9871234567',parent:'Sunil Kapoor',address:'DLF Colony, Faridabad',transport:'Private Vehicle',bus:'',email:'rohan@gmail.com',feeStatus:'paid'},
+  {id:'STU-008',roll:'STU-008',pass:'student8',name:'Divya Rawat',class:'XII-Sci',dob:'2008-09-30',gender:'Female',phone:'9765432109',parent:'Harish Rawat',address:'Sector 7, Ballabgarh',transport:'School Bus',bus:'Route 5 – Sector 7',email:'divya@gmail.com',feeStatus:'pending'},
+  {id:'STU-009',roll:'STU-009',pass:'student9',name:'Aditya Kumar',class:'VII-A',dob:'2012-12-05',gender:'Male',phone:'9654321098',parent:'Rajesh Kumar',address:'Vijay Nagar, Faridabad',transport:'Walk / Cycle',bus:'',email:'aditya@gmail.com',feeStatus:'paid'},
+  {id:'STU-010',roll:'STU-010',pass:'student10',name:'Neha Sharma',class:'VI-A',dob:'2013-02-18',gender:'Female',phone:'9543210987',parent:'Vikram Sharma',address:'Sector 44, Ballabgarh',transport:'School Bus',bus:'Route 6 – Sector 44',email:'neha@gmail.com',feeStatus:'paid'},
+];
+
+/* 10 Teacher Accounts */
+const teachers = [
+  {id:'TCH-001',roll:'TCH-001',pass:'teacher1',name:'Mrs. Aarti Rawat',subject:'Mathematics',class:'X-A',phone:'9999888877',email:'aarti@rps.edu'},
+  {id:'TCH-002',roll:'TCH-002',pass:'teacher2',name:'Mr. Sunil Kumar',subject:'Science',class:'X-B',phone:'9876512345',email:'sunil@rps.edu'},
+  {id:'TCH-003',roll:'TCH-003',pass:'teacher3',name:'Mrs. Kavita Singh',subject:'English',class:'IX-A',phone:'9765423198',email:'kavita@rps.edu'},
+  {id:'TCH-004',roll:'TCH-004',pass:'teacher4',name:'Mr. Rakesh Sharma',subject:'Hindi',class:'IX-B',phone:'9654312087',email:'rakesh@rps.edu'},
+  {id:'TCH-005',roll:'TCH-005',pass:'teacher5',name:'Mrs. Preethi Menon',subject:'Social Science',class:'VIII-A',phone:'9543201976',email:'preethi@rps.edu'},
+  {id:'TCH-006',roll:'TCH-006',pass:'teacher6',name:'Mr. Amit Verma',subject:'Computer Science',class:'VIII-B',phone:'9432190865',email:'amit@rps.edu'},
+  {id:'TCH-007',roll:'TCH-007',pass:'teacher7',name:'Mrs. Sunita Yadav',subject:'Physics',class:'XI-Sci',phone:'9321089754',email:'sunita@rps.edu'},
+  {id:'TCH-008',roll:'TCH-008',pass:'teacher8',name:'Mr. Vijay Gupta',subject:'Chemistry',class:'XII-Sci',phone:'9210978643',email:'vijay@rps.edu'},
+  {id:'TCH-009',roll:'TCH-009',pass:'teacher9',name:'Mrs. Rekha Jain',subject:'Biology',class:'VII-A',phone:'9109867532',email:'rekha@rps.edu'},
+  {id:'TCH-010',roll:'TCH-010',pass:'teacher10',name:'Mr. Deepak Nair',subject:'Physical Education',class:'VI-A',phone:'9098756421',email:'deepak@rps.edu'},
+];
+
+let homework = [
+  {id:'HW1',classes:['X-A','X-B'],sub:'Mathematics',title:'Arithmetic Progressions – Ex 5.1 & 5.2',desc:'Complete all sums. Show full working.',issued:'2025-07-01',due:'2025-07-05'},
+  {id:'HW2',classes:['X-A'],sub:'Science',title:'Chemical Reactions Worksheet 3',desc:'Answer all MCQs and short answer questions.',issued:'2025-07-02',due:'2025-07-06'},
+  {id:'HW3',classes:['IX-A','IX-B'],sub:'English',title:'Essay – My Ideal School',desc:'Write a 300-word essay with introduction and conclusion.',issued:'2025-07-03',due:'2025-07-07'},
+  {id:'HW4',classes:['XI-Sci'],sub:'Physics',title:'Laws of Motion – Numericals',desc:'Solve problems 1–15 from NCERT Chapter 5.',issued:'2025-07-04',due:'2025-07-09'},
+];
+
+let tests = [
+  {id:'T1',classes:['X-A','X-B'],sub:'Mathematics',topic:'Real Numbers & Polynomials',date:'2025-07-12',maxMarks:25,status:'upcoming'},
+  {id:'T2',classes:['IX-A'],sub:'Science',topic:'Matter in Our Surroundings',date:'2025-07-10',maxMarks:20,status:'upcoming'},
+  {id:'T3',classes:['XI-Sci'],sub:'Chemistry',topic:'Basic Concepts of Chemistry',date:'2025-07-08',maxMarks:30,status:'upcoming'},
+];
+
+let attendance = [];
+let feeRecords = students.map(s=>({stuId:s.id,month:'July 2025',amount:'₹2,500',status:s.feeStatus}));
+
+let currentUser = null;
+let currentRole = 'student';
+let pendingOtp = '';
+
+/* ═══════════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════════ */
+function setRole(role){
+  currentRole = role;
+  document.getElementById('tabStudent').classList.toggle('active', role==='student');
+  document.getElementById('tabTeacher').classList.toggle('active', role==='teacher');
+  document.getElementById('s1title').textContent = role==='student' ? 'Student Login' : 'Teacher Login';
+  document.getElementById('s1sub').textContent   = role==='student' ? 'Enter your Roll Number and password.' : 'Enter your Teacher ID and password.';
+  document.getElementById('idLabel').textContent  = role==='student' ? 'Roll Number' : 'Teacher ID';
+  document.getElementById('loginId').placeholder  = role==='student' ? 'e.g. STU-001' : 'e.g. TCH-001';
+  renderDemoAccounts();
+}
+
+function renderDemoAccounts(){
+  const list = currentRole==='student' ? students : teachers;
+  document.getElementById('demoList').innerHTML = list.slice(0,5).map(u=>`
+    <div class="demo-account" onclick="fillDemo('${u.roll}','${u.pass}')">
+      <div><div class="da-name">${u.name}</div><div class="da-cred">${u.roll} / ${u.pass}</div></div>
+      <div class="da-fill">Fill →</div>
+    </div>
+  `).join('');
+}
+
+function fillDemo(id, pass){
+  document.getElementById('loginId').value  = id;
+  document.getElementById('loginPass').value= pass;
+}
+
+function doLogin(){
+  const id   = document.getElementById('loginId').value.trim().toUpperCase();
+  const pass  = document.getElementById('loginPass').value.trim();
+  const errEl = document.getElementById('lerr');
+  errEl.style.display='none';
+
+  const list = currentRole==='student' ? students : teachers;
+  const user = list.find(u=>u.roll.toUpperCase()===id && u.pass===pass);
+  if(!user){ errEl.style.display='block'; return; }
+
+  currentUser = user;
+  // Generate OTP
+  pendingOtp = String(Math.floor(100000+Math.random()*900000));
+  const ph = user.phone;
+  const masked = ph.slice(0,2)+'XXXXXX'+ph.slice(-2);
+  document.getElementById('otpSub').textContent = `OTP sent to +91 ${masked} (Demo OTP: ${pendingOtp})`;
+  document.getElementById('otpHint').textContent = `🔐 Demo mode – OTP is: ${pendingOtp}`;
+
+  buildOtpBoxes();
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+}
+
+function buildOtpBoxes(){
+  const row = document.getElementById('otpBoxes');
+  row.innerHTML='';
+  for(let i=0;i<6;i++){
+    const b=document.createElement('input');
+    b.type='text';b.maxLength=1;b.className='otp-box';b.inputMode='numeric';
+    b.addEventListener('input',e=>{ if(e.target.value&&i<5) row.children[i+1].focus(); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Backspace'&&!e.target.value&&i>0) row.children[i-1].focus(); });
+    row.appendChild(b);
+  }
+  row.children[0].focus();
+}
+
+function getOtp(){ return Array.from(document.getElementById('otpBoxes').children).map(b=>b.value).join(''); }
+
+function verifyOtp(){
+  const entered=getOtp();
+  const errEl=document.getElementById('otpErr');
+  if(entered!==pendingOtp){ errEl.classList.add('on'); return; }
+  errEl.classList.remove('on');
+  currentRole==='student' ? enterStudent() : enterTeacher();
+}
+
+function resendOtp(){
+  pendingOtp=String(Math.floor(100000+Math.random()*900000));
+  document.getElementById('otpHint').textContent=`🔐 New OTP: ${pendingOtp}`;
+  buildOtpBoxes();
+  showToast('OTP resent.','i');
+}
+
+function backToStep1(){
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+}
+
+function logout(){
+  currentUser=null; pendingOtp='';
+  document.getElementById('loginId').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+  ['studentPage','teacherPage'].forEach(id=>{
+    document.getElementById(id).classList.remove('active');
+  });
+  const lp=document.getElementById('loginPage');
+  lp.style.display='flex';lp.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════════
+   STUDENT DASHBOARD
+═══════════════════════════════════════════════════ */
+function enterStudent(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('loginPage').classList.remove('active');
+  const sp=document.getElementById('studentPage');
+  sp.classList.add('active');
+
+  const s=currentUser;
+  document.getElementById('stuClassPill').textContent='Class '+s.class;
+  const h=new Date().getHours();
+  const g=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+  document.getElementById('stuGreet').textContent=g+', '+s.name.split(' ')[0]+'!';
+
+  renderStuOverview();
+  renderStuAttendance();
+  renderStuHomework();
+  renderStuTests();
+  renderStuResults();
+  renderStuFees();
+  renderStuBus();
+  renderStuTeachers();
+  renderStuProfile();
+
+  // homework badge
+  const myHw=homework.filter(h=>h.classes.includes(currentUser.class));
+  const due=myHw.filter(h=>new Date(h.due)>=new Date());
+  if(due.length){ document.getElementById('hwBadge').style.display=''; document.getElementById('hwBadge').textContent=due.length; }
+
+  showStu('overview', document.querySelector('#stuSidebar .sb-item'));
+}
+
+const attData=[
+  {month:'April',p:20,a:2,total:22},{month:'May',p:21,a:3,total:24},
+  {month:'June',p:16,a:2,total:18},{month:'July',p:8,a:1,total:9},
+];
+
+function renderStuOverview(){
+  const s=currentUser;
+  const myHw=homework.filter(h=>h.classes.includes(s.class));
+  const myTests=tests.filter(t=>t.classes.includes(s.class));
+  const totP=attData.reduce((a,b)=>a+b.p,0), totD=attData.reduce((a,b)=>a+b.total,0);
+  const pct=Math.round(totP/totD*100);
+
+  document.getElementById('overviewStats').innerHTML=`
+    <div class="stat-card ${pct>=75?'sc-green':'sc-red'}">
+      <div class="sc-icon">📅</div><div class="sc-val">${pct}%</div>
+      <div class="sc-label">Attendance</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${pct>=75?'var(--green)':'var(--red)'}"></div></div>
+      <div class="sc-note">${totP}/${totD} days present</div>
+    </div>
+    <div class="stat-card sc-accent">
+      <div class="sc-icon">📚</div><div class="sc-val">${myHw.length}</div>
+      <div class="sc-label">Assignments</div>
+      <div class="sc-note">${myHw.filter(h=>new Date(h.due)>=new Date()).length} pending</div>
+    </div>
+    <div class="stat-card sc-amber">
+      <div class="sc-icon">📝</div><div class="sc-val">${myTests.length}</div>
+      <div class="sc-label">Upcoming Tests</div>
+      <div class="sc-note">This month</div>
+    </div>
+    <div class="stat-card ${s.feeStatus==='paid'?'sc-green':'sc-red'}">
+      <div class="sc-icon">💳</div><div class="sc-val">${s.feeStatus==='paid'?'Paid':'Due'}</div>
+      <div class="sc-label">July Fees</div>
+      <div class="sc-note">₹2,500 / month</div>
+    </div>
+  `;
+
+  document.getElementById('ovHwTable').innerHTML=myHw.slice(0,4).map(h=>`
+    <tr><td><span class="badge bg-blue">${h.sub}</span></td><td>${h.title}</td>
+    <td>${fmtD(h.due)}</td>
+    <td><span class="badge ${new Date(h.due)>=new Date()?'bg-amber':'bg-grey'}">${new Date(h.due)>=new Date()?'Pending':'Past Due'}</span></td></tr>
+  `).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">No homework assigned</td></tr>';
+
+  document.getElementById('ovTestTable').innerHTML=myTests.slice(0,3).map(t=>`
+    <tr><td><span class="badge bg-accent">${t.sub}</span></td><td>${t.topic}</td>
+    <td>${fmtD(t.date)}</td><td style="color:var(--muted);font-size:12px">${t.topic}</td></tr>
+  `).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">No tests scheduled</td></tr>';
+}
+
+function renderStuAttendance(){
+  const totP=attData.reduce((a,b)=>a+b.p,0),totA=attData.reduce((a,b)=>a+b.a,0),totD=attData.reduce((a,b)=>a+b.total,0);
+  const pct=Math.round(totP/totD*100);
+  document.getElementById('attStats').innerHTML=`
+    <div class="stat-card ${pct>=75?'sc-green':'sc-red'}"><div class="sc-icon">📈</div><div class="sc-val">${pct}%</div><div class="sc-label">Overall</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${pct>=75?'var(--green)':'var(--red)'}"></div></div></div>
+    <div class="stat-card sc-green"><div class="sc-icon">✅</div><div class="sc-val">${totP}</div><div class="sc-label">Days Present</div></div>
+    <div class="stat-card sc-red"><div class="sc-icon">❌</div><div class="sc-val">${totA}</div><div class="sc-label">Days Absent</div></div>
+    <div class="stat-card"><div class="sc-icon">🗓</div><div class="sc-val">${totD}</div><div class="sc-label">School Days</div></div>
+  `;
+  // Mini calendar (July sample)
+  const days=['M','T','W','T','F','S','S'];
+  let cal=days.map(d=>`<div class="att-day hd">${d}</div>`).join('');
+  const julyData='..PPPPAPHPPPAPPP.PPPP'.split('');
+  for(let i=0;i<2;i++) cal+=`<div class="att-day empty"></div>`;
+  julyData.forEach(d=>{ cal+=d==='P'?`<div class="att-day p">P</div>`:d==='A'?`<div class="att-day a">A</div>`:d==='H'?`<div class="att-day h">H</div>`:`<div class="att-day empty"></div>`; });
+  document.getElementById('attCal').innerHTML=cal;
+  document.getElementById('attTable').innerHTML=attData.map(m=>{const p=Math.round(m.p/m.total*100);return`<tr><td>${m.month} 2025</td><td style="color:var(--green)">${m.p}</td><td style="color:var(--red)">${m.a}</td><td>${m.total}</td><td><span class="badge ${p>=75?'bg-green':'bg-red'}">${p}%</span></td></tr>`}).join('');
+}
+
+function renderStuHomework(){
+  const myHw=homework.filter(h=>h.classes.includes(currentUser.class));
+  document.getElementById('hwTable').innerHTML=myHw.map(h=>`
+    <tr><td><span class="badge bg-blue">${h.sub}</span></td><td><strong>${h.title}</strong></td>
+    <td style="max-width:180px;font-size:12px;color:var(--muted)">${h.desc||'—'}</td>
+    <td>${fmtD(h.issued)}</td><td>${fmtD(h.due)}</td>
+    <td><span class="badge ${new Date(h.due)>=new Date()?'bg-amber':'bg-grey'}">${new Date(h.due)>=new Date()?'Pending':'Past Due'}</span></td></tr>
+  `).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No assignments</td></tr>';
+}
+
+function renderStuTests(){
+  const myT=tests.filter(t=>t.classes.includes(currentUser.class));
+  document.getElementById('testsTable').innerHTML=myT.map(t=>`
+    <tr><td><span class="badge bg-accent">${t.sub}</span></td><td><strong>${t.topic}</strong></td>
+    <td>${fmtD(t.date)}</td><td>${t.maxMarks}</td>
+    <td style="font-size:12px;color:var(--muted)">${t.topic}</td>
+    <td><span class="badge ${new Date(t.date)>=new Date()?'bg-amber':'bg-grey'}">${new Date(t.date)>=new Date()?'Upcoming':'Completed'}</span></td></tr>
+  `).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No tests scheduled</td></tr>';
+}
+
+function renderStuResults(){
+  document.getElementById('resultsContent').innerHTML=`
+    <div class="tbl-wrap"><div class="tbl-head"><div class="tbl-title">Mid-Term 2025 – Mark Sheet</div><span class="badge bg-green">Published</span></div>
+    <table><thead><tr><th>Subject</th><th>Max Marks</th><th>Obtained</th><th>Grade</th><th>Remarks</th></tr></thead>
+    <tbody>${[['Mathematics',100,76,'B+','Good'],['Science',100,83,'A','Excellent'],['English',100,91,'A+','Outstanding'],['Hindi',100,72,'B','Satisfactory'],['Social Science',100,68,'B-','Needs improvement']].map(r=>`
+      <tr><td>${r[0]}</td><td>${r[1]}</td><td><strong>${r[2]}</strong></td>
+      <td><span class="badge ${r[3].startsWith('A')?'bg-green':'bg-amber'}">${r[3]}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${r[4]}</td></tr>`).join('')}
+      <tr style="border-top:1px solid var(--bh)"><td colspan="2"><strong>Total</strong></td><td><strong>390/500</strong></td><td><span class="badge bg-green">B+</span></td><td style="color:var(--muted);font-size:12px">Rank: 7/42</td></tr>
+    </tbody></table></div>`;
+}
+
+function renderStuFees(){
+  const s=currentUser;
+  document.getElementById('feesContent').innerHTML=`
+    <div class="stat-grid">
+      <div class="stat-card sc-green"><div class="sc-icon">✅</div><div class="sc-val">₹7,500</div><div class="sc-label">Paid (Apr–Jun)</div></div>
+      <div class="stat-card ${s.feeStatus==='paid'?'sc-green':'sc-red'}"><div class="sc-icon">💳</div><div class="sc-val">${s.feeStatus==='paid'?'₹0':'₹2,500'}</div><div class="sc-label">Outstanding July</div></div>
+    </div>
+    <div class="tbl-wrap"><div class="tbl-head"><div class="tbl-title">Payment History</div>${s.feeStatus==='pending'?`<button class="btn btn-green btn-sm" onclick="showToast('Redirecting to payment gateway…','i')">Pay Now ₹2,500</button>`:''}</div>
+    <table><thead><tr><th>Month</th><th>Amount</th><th>Due Date</th><th>Paid On</th><th>Status</th></tr></thead>
+    <tbody>${[['April 2025','₹2,500','05 Apr','02 Apr','paid'],['May 2025','₹2,500','05 May','04 May','paid'],['June 2025','₹2,500','05 Jun','01 Jun','paid'],['July 2025','₹2,500','05 Jul',s.feeStatus==='paid'?'03 Jul':'—',s.feeStatus]].map(f=>`
+      <tr><td>${f[0]}</td><td>${f[1]}</td><td>${f[2]}</td><td>${f[3]}</td>
+      <td><span class="badge ${f[4]==='paid'?'bg-green':'bg-red'}">${f[4]==='paid'?'Paid':'Pending'}</span></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+function renderStuBus(){
+  const s=currentUser;
+  document.getElementById('busContent').innerHTML=`
+    <div class="info-card">
+      <div class="profile-wrap">
+        <div class="avatar">🚌</div>
+        <div>
+          <div class="profile-name">Transport Details</div>
+          <div class="profile-sub">Mode: ${s.transport}</div>
+          <div class="detail-grid">
+            <div class="detail-item"><div class="di-label">Mode</div><div class="di-val">${s.transport}</div></div>
+            <div class="detail-item"><div class="di-label">Route / Stop</div><div class="di-val">${s.bus||'N/A'}</div></div>
+            <div class="detail-item"><div class="di-label">Pick-up Time</div><div class="di-val">${s.transport==='School Bus'?'7:15 AM':'N/A'}</div></div>
+            <div class="detail-item"><div class="di-label">Drop Time</div><div class="di-val">${s.transport==='School Bus'?'2:45 PM':'N/A'}</div></div>
+            <div class="detail-item"><div class="di-label">Driver Contact</div><div class="di-val">${s.transport==='School Bus'?'+91 99887 76655':'N/A'}</div></div>
+            <div class="detail-item"><div class="di-label">School Gate Opens</div><div class="di-val">7:30 AM</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    ${s.transport==='School Bus'?`
+    <div class="info-card">
+      <div class="card-title">Route Stops – ${s.bus}</div>
+      <div class="card-sub">Your bus makes the following stops</div>
+      <div class="bus-route">
+        <div class="bus-stop current"><div class="bus-dot"></div><div><div class="bus-stop-name">📍 ${s.bus} (Your Stop)</div><div class="bus-stop-time">Pick-up: 7:15 AM</div></div></div>
+        <div class="bus-line" style="margin-left:5px"></div>
+        <div class="bus-stop"><div class="bus-dot"></div><div><div class="bus-stop-name">Sector 65 Chowk</div><div class="bus-stop-time">7:22 AM</div></div></div>
+        <div class="bus-line" style="margin-left:5px"></div>
+        <div class="bus-stop"><div class="bus-dot"></div><div><div class="bus-stop-name">Ballabgarh Bypass</div><div class="bus-stop-time">7:30 AM</div></div></div>
+        <div class="bus-line" style="margin-left:5px"></div>
+        <div class="bus-stop" style="color:var(--accent2)"><div class="bus-dot" style="background:var(--accent)"></div><div><div class="bus-stop-name" style="color:var(--accent2)">🏫 Rawal Public School</div><div class="bus-stop-time">7:40 AM</div></div></div>
+      </div>
+    </div>`:''}`;
+}
+
+function renderStuTeachers(){
+  document.getElementById('teachersContent').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+      ${teachers.slice(0,6).map(t=>`
+        <div class="info-card" style="cursor:default">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+            <div class="avatar" style="width:48px;height:48px;border-radius:12px;font-size:16px">${t.name.split(' ').slice(1).map(n=>n[0]).join('').slice(0,2)}</div>
+            <div>
+              <div style="font-weight:600;font-size:14px">${t.name}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">${t.subject}</div>
+            </div>
+          </div>
+          <div class="detail-grid" style="grid-template-columns:1fr">
+            <div class="detail-item"><div class="di-label">Class Teacher</div><div class="di-val">Class ${t.class}</div></div>
+            <div class="detail-item"><div class="di-label">Contact</div><div class="di-val"><a href="tel:${t.phone}" style="color:var(--accent2);text-decoration:none">${t.phone}</a></div></div>
+            <div class="detail-item"><div class="di-label">Email</div><div class="di-val" style="font-size:12px">${t.email}</div></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function renderStuProfile(){
+  const s=currentUser;
+  const initials=s.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+  document.getElementById('profileContent').innerHTML=`
+    <div class="info-card">
+      <div class="profile-wrap">
+        <div class="avatar">${initials}</div>
+        <div>
+          <div class="profile-name">${s.name}</div>
+          <div class="profile-sub">Roll No: ${s.roll} &nbsp;·&nbsp; Class ${s.class}</div>
+          <div class="detail-grid">
+            <div class="detail-item"><div class="di-label">Date of Birth</div><div class="di-val">${fmtD(s.dob)}</div></div>
+            <div class="detail-item"><div class="di-label">Gender</div><div class="di-val">${s.gender}</div></div>
+            <div class="detail-item"><div class="di-label">Class / Section</div><div class="di-val">Class ${s.class}</div></div>
+            <div class="detail-item"><div class="di-label">Parent / Guardian</div><div class="di-val">${s.parent}</div></div>
+            <div class="detail-item"><div class="di-label">Parent Phone</div><div class="di-val">${s.phone}</div></div>
+            <div class="detail-item"><div class="di-label">Transport</div><div class="di-val">${s.transport}</div></div>
+            <div class="detail-item"><div class="di-label">Bus Route</div><div class="di-val">${s.bus||'N/A'}</div></div>
+            <div class="detail-item"><div class="di-label">Email</div><div class="di-val">${s.email}</div></div>
+            <div class="detail-item" style="grid-column:1/-1"><div class="di-label">Address</div><div class="di-val">${s.address}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function showStu(panel, linkEl){
+  document.querySelectorAll('#studentPage .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('stu-'+panel).classList.add('active');
+  document.querySelectorAll('#stuSidebar .sb-item').forEach(l=>l.classList.remove('active'));
+  if(linkEl) linkEl.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════════
+   TEACHER DASHBOARD
+═══════════════════════════════════════════════════ */
+function enterTeacher(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('loginPage').classList.remove('active');
+  const tp=document.getElementById('teacherPage');
+  tp.classList.add('active');
+
+  const t=currentUser;
+  document.getElementById('tNamePill').textContent=t.name.split(' ').slice(0,2).join(' ');
+  const h=new Date().getHours();
+  const g=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+  document.getElementById('tGreet').textContent=g+', '+t.name.split(' ')[1]+'!';
+
+  populateSelects();
+  buildChips('hwClasses');
+  buildChips('testClasses');
+  renderTchOverview();
+  renderStudentTable();
+  renderTchHwTable();
+  renderTchTestTable();
+  renderFees();
+  renderContacts();
+  renderFeeStats();
+
+  document.getElementById('attDate').value=new Date().toISOString().slice(0,10);
+  showTch('overview', document.querySelector('#teacherPage .sb-item'));
+}
+
+function populateSelects(){
+  const ids=['attClass','resClass','filterClass','contactFilter','feeFilterClass','sClass','moveToClass','massMoveClass'];
+  ids.forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const hasEmpty=sel.innerHTML.includes('--')||sel.innerHTML.includes('All');
+    if(hasEmpty){ while(sel.options.length>1) sel.remove(1); } else sel.innerHTML='';
+    CLASSES.forEach(c=>{ const o=document.createElement('option');o.value=c;o.textContent='Class '+c;sel.appendChild(o); });
+  });
+}
+
+function buildChips(targetId){
+  const div=document.getElementById(targetId);
+  div.innerHTML=CLASSES.map(c=>`<div class="chip" data-cls="${c}" onclick="this.classList.toggle('on')">Class ${c}</div>`).join('');
+}
+
+function getSelectedChips(targetId){ return Array.from(document.querySelectorAll(`#${targetId} .chip.on`)).map(c=>c.dataset.cls); }
+
+function renderTchOverview(){
+  document.getElementById('tchStats').innerHTML=`
+    <div class="stat-card"><div class="sc-icon">👥</div><div class="sc-val">${students.length}</div><div class="sc-label">Total Students</div></div>
+    <div class="stat-card sc-accent"><div class="sc-icon">📚</div><div class="sc-val">${homework.length}</div><div class="sc-label">Assignments Sent</div></div>
+    <div class="stat-card sc-amber"><div class="sc-icon">📝</div><div class="sc-val">${tests.length}</div><div class="sc-label">Tests Scheduled</div></div>
+    <div class="stat-card sc-red"><div class="sc-icon">💳</div><div class="sc-val">${students.filter(s=>s.feeStatus==='pending').length}</div><div class="sc-label">Fee Pending</div></div>
+  `;
+
+  const byClass={};
+  CLASSES.forEach(c=>{ byClass[c]={total:0,p:0,marked:false}; });
+  students.forEach(s=>{ if(byClass[s.class]) byClass[s.class].total++; });
+  const today=new Date().toISOString().slice(0,10);
+  attendance.filter(a=>a.date===today&&a.status==='present').forEach(a=>{ if(byClass[a.class]) byClass[a.class].p++; });
+  attendance.filter(a=>a.date===today).forEach(a=>{ if(byClass[a.class]) byClass[a.class].marked=true; });
+
+  document.getElementById('tchAttSummary').innerHTML=CLASSES.filter(c=>byClass[c].total>0).map(c=>{
+    const d=byClass[c],absent=d.total-d.p,pct=d.total>0?Math.round(d.p/d.total*100):0;
+    return`<tr><td>Class ${c}</td><td style="color:var(--green)">${d.p}</td><td style="color:var(--red)">${absent}</td><td>${d.total}</td>
+    <td><span class="badge ${pct>=75?'bg-green':'bg-red'}">${pct}%</span></td>
+    <td><span class="badge ${d.marked?'bg-green':'bg-grey'}">${d.marked?'Done':'Pending'}</span></td></tr>`;
+  }).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No data</td></tr>';
+}
+
+function renderStudentTable(){
+  const cls=document.getElementById('filterClass').value;
+  const filtered=cls?students.filter(s=>s.class===cls):students;
+  document.getElementById('stuListTitle').textContent=cls?`Class ${cls} (${filtered.length})`: `All Students (${filtered.length})`;
+  document.getElementById('stuTable').innerHTML=filtered.map(s=>`
+    <tr>
+      <td><input type="checkbox" class="stu-chk" data-id="${s.id}" style="accent-color:var(--accent)"></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">${s.roll}</td>
+      <td><strong>${s.name}</strong></td>
+      <td><span class="badge bg-grey">Class ${s.class}</span></td>
+      <td><a href="tel:${s.phone}" style="color:var(--muted);text-decoration:none;font-size:12px">${s.phone}</a></td>
+      <td><span class="badge ${s.feeStatus==='paid'?'bg-green':'bg-red'}">${s.feeStatus}</span></td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="openEditStu('${s.id}')">Edit</button>
+        <button class="btn btn-amber btn-sm" onclick="openMoveClass('${s.id}')">Move</button>
+        <button class="btn btn-red btn-sm" onclick="removeStu('${s.id}')">Remove</button>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">No students found</td></tr>';
+}
+
+function toggleSelectAll(){
+  const checked=document.getElementById('selectAll').checked;
+  document.querySelectorAll('.stu-chk').forEach(c=>c.checked=checked);
+}
+
+function exportStudents(){ showToast('Export feature coming soon — would generate CSV.','i'); }
+
+/* ATTENDANCE */
+let attMap={};
+function loadAttStudents(){
+  const cls=document.getElementById('attClass').value;
+  const date=document.getElementById('attDate').value;
+  if(!cls)return;
+  const clsStu=students.filter(s=>s.class===cls);
+  attMap={};
+  // preload existing
+  attendance.filter(a=>a.class===cls&&a.date===date).forEach(a=>{ attMap[a.stuId]=a.status; });
+
+  document.getElementById('attList').innerHTML=clsStu.length?clsStu.map(s=>{
+    const existing=attMap[s.id]||'';
+    return`<div class="att-row" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1"><div style="font-size:13px;font-weight:500">${s.name}</div><div style="font-size:10px;color:var(--muted)">${s.roll}</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm ${existing==='present'?'btn-green':'btn-ghost'}" onclick="setAttStu('${s.id}','present',this)">✓ Present</button>
+        <button class="btn btn-sm ${existing==='absent'?'btn-red':'btn-ghost'}" onclick="setAttStu('${s.id}','absent',this)">✗ Absent</button>
+      </div>
+    </div>`;
+  }).join(''):'<p style="color:var(--muted);padding:10px">No students in this class.</p>';
+}
+
+function setAttStu(id,status,btn){
+  attMap[id]=status;
+  const row=btn.closest('.att-row');
+  row.querySelectorAll('button').forEach(b=>b.className=b.className.replace('btn-green','btn-ghost').replace('btn-red','btn-ghost'));
+  btn.className=btn.className.replace('btn-ghost',status==='present'?'btn-green':'btn-red');
+}
+
+function markAll(status){
+  document.querySelectorAll('.att-row').forEach(row=>{
+    const id=row.querySelector('button').onclick?.toString().match(/'([^']+)'/)?.[1];
+    const btns=row.querySelectorAll('button');
+    btns.forEach(b=>b.className=b.className.replace('btn-green','btn-ghost').replace('btn-red','btn-ghost'));
+    btns[status==='present'?0:1].className=btns[status==='present'?0:1].className.replace('btn-ghost',status==='present'?'btn-green':'btn-red');
+  });
+  const cls=document.getElementById('attClass').value;
+  students.filter(s=>s.class===cls).forEach(s=>{ attMap[s.id]=status; });
+}
+
+function saveAtt(){
+  const cls=document.getElementById('attClass').value;
+  const date=document.getElementById('attDate').value;
+  if(!cls||!date){ showToast('Select class and date.','e');return; }
+  attendance=attendance.filter(a=>!(a.class===cls&&a.date===date));
+  students.filter(s=>s.class===cls).forEach(s=>{
+    attendance.push({stuId:s.id,class:cls,date,status:attMap[s.id]||'present'});
+  });
+  renderTchOverview();
+  showToast('Attendance saved for Class '+cls,'s');
+  attMap={};
+}
+
+/* HOMEWORK */
+function sendHw(){
+  const cls=getSelectedChips('hwClasses');
+  const sub=document.getElementById('hwSub').value;
+  const title=document.getElementById('hwTitle').value.trim();
+  const due=document.getElementById('hwDue').value;
+  const desc=document.getElementById('hwDesc').value.trim();
+  if(!cls.length||!sub||!title||!due){ showToast('Please fill all required fields and select at least one class.','e');return; }
+  homework.unshift({id:'HW'+Date.now(),classes:cls,sub,title,desc,issued:todayStr(),due});
+  document.querySelectorAll('#hwClasses .chip').forEach(c=>c.classList.remove('on'));
+  document.getElementById('hwSub').value='';document.getElementById('hwTitle').value='';document.getElementById('hwDue').value='';document.getElementById('hwDesc').value='';
+  renderTchHwTable();
+  showToast('Homework sent to '+cls.join(', '),'s');
+}
+
+function renderTchHwTable(){
+  document.getElementById('tchHwTable').innerHTML=homework.slice(0,15).map(h=>`
+    <tr><td>${h.classes.map(c=>`<span class="badge bg-grey" style="font-size:8px;margin:1px">${c}</span>`).join('')}</td>
+    <td><span class="badge bg-blue">${h.sub}</span></td><td>${h.title}</td>
+    <td>${fmtD(h.issued)}</td><td>${fmtD(h.due)}</td>
+    <td><button class="btn btn-red btn-sm" onclick="deleteHw('${h.id}')">Delete</button></td></tr>
+  `).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No assignments</td></tr>';
+}
+
+function deleteHw(id){ homework=homework.filter(h=>h.id!==id); renderTchHwTable(); showToast('Deleted.','i'); }
+
+/* TESTS */
+function scheduleTest(){
+  const cls=getSelectedChips('testClasses');
+  const sub=document.getElementById('testSub').value;
+  const date=document.getElementById('testDate').value;
+  const topic=document.getElementById('testTopic').value.trim();
+  const max=document.getElementById('testMax').value||25;
+  if(!cls.length||!sub||!date||!topic){ showToast('Fill all fields and select at least one class.','e');return; }
+  tests.unshift({id:'T'+Date.now(),classes:cls,sub,topic,date,maxMarks:max,status:'upcoming'});
+  document.querySelectorAll('#testClasses .chip').forEach(c=>c.classList.remove('on'));
+  document.getElementById('testSub').value='';document.getElementById('testDate').value='';document.getElementById('testTopic').value='';document.getElementById('testMax').value='';
+  renderTchTestTable();
+  showToast('Test scheduled for '+cls.join(', '),'s');
+}
+
+function renderTchTestTable(){
+  document.getElementById('tchTestTable').innerHTML=tests.map(t=>`
+    <tr><td>${t.classes.map(c=>`<span class="badge bg-grey" style="font-size:8px;margin:1px">${c}</span>`).join('')}</td>
+    <td><span class="badge bg-accent">${t.sub}</span></td><td>${t.topic}</td>
+    <td>${fmtD(t.date)}</td><td>${t.maxMarks}</td>
+    <td><span class="badge ${new Date(t.date)>=new Date()?'bg-amber':'bg-green'}">${new Date(t.date)>=new Date()?'Upcoming':'Done'}</span></td>
+    <td><button class="btn btn-red btn-sm" onclick="deleteTest('${t.id}')">Delete</button></td></tr>
+  `).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">No tests</td></tr>';
+}
+
+function deleteTest(id){ tests=tests.filter(t=>t.id!==id); renderTchTestTable(); showToast('Test removed.','i'); }
+
+/* RESULTS */
+function loadResStudents(){
+  const cls=document.getElementById('resClass').value;
+  if(!cls){ document.getElementById('resList').innerHTML='<p style="color:var(--muted);font-size:13px">Select a class to enter marks.</p>';return; }
+  const clsStu=students.filter(s=>s.class===cls);
+  document.getElementById('resList').innerHTML=clsStu.length?`
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr><th style="text-align:left;padding:8px;font-size:10px;letter-spacing:2px;color:var(--muted)">STUDENT</th>${['Maths','Science','English','Hindi','SSt'].map(s=>`<th style="padding:8px;font-size:10px;letter-spacing:1px;color:var(--muted)">${s}</th>`).join('')}</tr></thead>
+      <tbody>${clsStu.map(s=>`<tr><td style="padding:8px;font-size:13px">${s.name}</td>${['','','','',''].map((_,i)=>`<td><input type="number" min="0" max="100" placeholder="—" style="width:56px;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--white);font-size:12px;outline:none;text-align:center" data-stu="${s.id}" data-sub="${i}"></td>`).join('')}</tr>`).join('')}
+      </tbody>
+    </table>`:'<p style="color:var(--muted)">No students in this class.</p>';
+}
+
+function saveResults(){ showToast('Results saved and published!','s'); }
+
+/* FEES */
+function renderFeeStats(){
+  const paid=students.filter(s=>s.feeStatus==='paid').length;
+  const pend=students.filter(s=>s.feeStatus==='pending').length;
+  document.getElementById('feeStats').innerHTML=`
+    <div class="stat-card sc-green"><div class="sc-icon">✅</div><div class="sc-val">${paid}</div><div class="sc-label">Fees Paid</div></div>
+    <div class="stat-card sc-red"><div class="sc-icon">⏳</div><div class="sc-val">${pend}</div><div class="sc-label">Pending</div></div>
+    <div class="stat-card"><div class="sc-icon">💰</div><div class="sc-val">₹${paid*2500 .toLocaleString()}</div><div class="sc-label">Collected July</div></div>
+    <div class="stat-card sc-amber"><div class="sc-icon">📋</div><div class="sc-val">₹${pend*2500 .toLocaleString()}</div><div class="sc-label">Outstanding</div></div>
+  `;
+}
+
+function renderFees(){
+  const cls=document.getElementById('feeFilterClass').value;
+  const filtered=cls?students.filter(s=>s.class===cls):students;
+  document.getElementById('feesTable').innerHTML=filtered.map(s=>`
+    <tr><td><input type="checkbox" class="fee-chk" data-id="${s.id}" style="accent-color:var(--accent)"></td>
+    <td><strong>${s.name}</strong></td>
+    <td><span class="badge bg-grey">Class ${s.class}</span></td>
+    <td>₹2,500</td><td>July 2025</td>
+    <td><span class="badge ${s.feeStatus==='paid'?'bg-green':'bg-red'}">${s.feeStatus}</span></td>
+    <td><button class="btn btn-sm ${s.feeStatus==='paid'?'btn-ghost':'btn-green'}" onclick="toggleFee('${s.id}')">${s.feeStatus==='paid'?'Mark Pending':'Mark Paid'}</button></td></tr>
+  `).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">No records</td></tr>';
+}
+
+function toggleFee(id){
+  students=students.map(s=>s.id===id?{...s,feeStatus:s.feeStatus==='paid'?'pending':'paid'}:s);
+  renderFees(); renderFeeStats();
+  showToast('Fee status updated.','s');
+}
+
+function markFeesPaid(){
+  const ids=Array.from(document.querySelectorAll('.fee-chk:checked')).map(c=>c.dataset.id);
+  if(!ids.length){ showToast('Select students first.','e');return; }
+  students=students.map(s=>ids.includes(s.id)?{...s,feeStatus:'paid'}:s);
+  renderFees(); renderFeeStats(); showToast(`${ids.length} students marked as paid.`,'s');
+}
+
+function renderContacts(){
+  const cls=document.getElementById('contactFilter').value;
+  const filtered=cls?students.filter(s=>s.class===cls):students;
+  document.getElementById('contactTable').innerHTML=filtered.map(s=>`
+    <tr><td><strong>${s.name}</strong></td>
+    <td><span class="badge bg-grey">Class ${s.class}</span></td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">${s.roll}</td>
+    <td>${s.parent||'—'}</td>
+    <td><a href="tel:${s.phone}" style="color:var(--accent2);text-decoration:none">${s.phone}</a></td>
+    <td style="font-size:12px;color:var(--muted);max-width:160px">${s.address}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="openEditStu('${s.id}')">Edit</button></td></tr>
+  `).join('');
+}
+
+/* STUDENT CRUD */
+function openModal(id){ document.getElementById(id).classList.add('on'); }
+function closeModal(id){ document.getElementById(id).classList.remove('on'); }
+
+function openEditStu(id){
+  const s=students.find(st=>st.id===id);if(!s)return;
+  document.getElementById('addStuTitle').textContent='Edit Student';
+  document.getElementById('editStuId').value=id;
+  document.getElementById('sRoll').value=s.roll;
+  document.getElementById('sFn').value=s.name.split(' ')[0];
+  document.getElementById('sLn').value=s.name.split(' ').slice(1).join(' ');
+  document.getElementById('sDob').value=s.dob||'';
+  document.getElementById('sGender').value=s.gender;
+  document.getElementById('sAddr').value=s.address||'';
+  document.getElementById('sParent').value=s.parent||'';
+  document.getElementById('sPhone').value=s.phone;
+  document.getElementById('sBus').value=s.bus||'';
+  document.getElementById('sPass').value=s.pass;
+  document.getElementById('sTransport').value=s.transport;
+  populateSelects();
+  document.getElementById('sClass').value=s.class;
+  openModal('addStuModal');
+}
+
+function saveStu(){
+  const fn=document.getElementById('sFn').value.trim();
+  const ln=document.getElementById('sLn').value.trim();
+  const roll=document.getElementById('sRoll').value.trim().toUpperCase();
+  const cls=document.getElementById('sClass').value;
+  const phone=document.getElementById('sPhone').value.trim();
+  if(!fn||!roll||!cls||!phone){ showToast('Fill required fields.','e');return; }
+  const editId=document.getElementById('editStuId').value;
+  const obj={
+    id:editId||'STU-'+Date.now(),roll,name:fn+' '+ln,class:cls,
+    dob:document.getElementById('sDob').value,gender:document.getElementById('sGender').value,
+    phone,parent:document.getElementById('sParent').value.trim(),
+    address:document.getElementById('sAddr').value.trim(),
+    transport:document.getElementById('sTransport').value,
+    bus:document.getElementById('sBus').value.trim(),
+    pass:document.getElementById('sPass').value||'rps123',
+    email:'',feeStatus:'pending',
+  };
+  if(editId) students=students.map(s=>s.id===editId?obj:s);
+  else students.push(obj);
+  closeModal('addStuModal');renderStudentTable();renderTchOverview();
+  showToast(editId?'Student updated.':'Student added.','s');
+}
+
+function removeStu(id){
+  if(!confirm('Remove this student permanently?'))return;
+  students=students.filter(s=>s.id!==id);
+  renderStudentTable();renderTchOverview();
+  showToast('Student removed.','i');
+}
+
+function openMoveClass(id){
+  const s=students.find(st=>st.id===id);if(!s)return;
+  document.getElementById('moveStuId').value=id;
+  document.getElementById('moveSub').textContent=`Moving: ${s.name} (Class ${s.class})`;
+  populateSelects();
+  document.getElementById('moveToClass').value=s.class;
+  openModal('moveClassModal');
+}
+
+function confirmMove(){
+  const id=document.getElementById('moveStuId').value;
+  const newCls=document.getElementById('moveToClass').value;
+  students=students.map(s=>s.id===id?{...s,class:newCls}:s);
+  closeModal('moveClassModal');renderStudentTable();
+  showToast('Student moved to Class '+newCls,'s');
+}
+
+function applyMassEdit(){
+  const ids=Array.from(document.querySelectorAll('.stu-chk:checked')).map(c=>c.dataset.id);
+  if(!ids.length){ showToast('Select students first.','e');return; }
+  const newCls=document.getElementById('massMoveClass').value;
+  const newFee=document.getElementById('massFeeStatus').value;
+  students=students.map(s=>{
+    if(!ids.includes(s.id))return s;
+    return{...s,...(newCls?{class:newCls}:{}),...(newFee?{feeStatus:newFee}:{})};
+  });
+  closeModal('massEditModal');renderStudentTable();renderFees();renderFeeStats();
+  showToast(`Updated ${ids.length} students.`,'s');
+}
+
+function showTch(panel, linkEl){
+  document.querySelectorAll('#teacherPage .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tch-'+panel).classList.add('active');
+  document.querySelectorAll('#teacherPage .sb-item').forEach(l=>l.classList.remove('active'));
+  if(linkEl) linkEl.classList.add('active');
+}
+
+/* ════ HELPERS ════ */
+function fmtD(d){ if(!d)return'—'; try{ return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }catch{return d;} }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+let toastTimer;
+function showToast(msg,type='i'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast ${type} on`;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),3500);
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',function(e){ if(e.target===this) closeModal(this.id); });
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.modal-overlay.on').forEach(o=>closeModal(o.id)); });
+
+// Init demo accounts
+renderDemoAccounts();
+</script>
+</body>
+</html>
